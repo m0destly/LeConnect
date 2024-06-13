@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, Settings } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, Button } from 'react-native';
 
-const HomeScreen = ({ navigation }) => {
+const EventsHubScreen = ({ navigation }) => {
   const handlePress = () => {
     navigation.navigate('LoginScreen');
   };
@@ -14,13 +12,14 @@ const HomeScreen = ({ navigation }) => {
       <Button title="Go to Details" onPress={handlePress} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'red',
   },
   title: {
     fontSize: 24,
@@ -28,4 +27,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default EventsHubScreen;
