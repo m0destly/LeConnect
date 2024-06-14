@@ -1,14 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc } from 'firebase/firestore';
 
 const HomeScreen = ({ navigation }) => {
+  // initialize service
+  const db = getFirestore();
+  // collction reference
+  const colRef = collection(db, 'events');
+  // get collection data
+  const events = [];
+  getDocs(colRef)
+    .then((snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        events.push({ ...doc.data(), id: doc.id })
+      })
+      console.log(events);
+    })
+    .catch(err => {
+      console.log(err.message)
+    })
 
-  const handlePress = () => {
+  const saveData = () => {
     navigation.navigate('LoginScreen');
   };
 
   const [selectedFilter, setSelectedFilter] = useState('');
+  const [data, onChangeData] = useState('');
 
   return (
     <View style={styles.container}>
@@ -27,7 +45,13 @@ const HomeScreen = ({ navigation }) => {
           </Picker>
         </View>
       </View>
-      <Button title="Go to Details" onPress={handlePress} />
+      <TextInput
+        style={styles.input}
+        onChangeText={onChangeData}
+        value={data}
+        placeholder="Enter something"
+      />
+      <Button title="Save input" onPress={saveData} />
     </View>
   );
 }
@@ -56,6 +80,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 160,
     height: 10
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
   },
 });
 
