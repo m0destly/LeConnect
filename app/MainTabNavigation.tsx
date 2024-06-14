@@ -16,7 +16,7 @@ const MainTabNavigator = () => {
     >
     <Tab.Screen
         name="Home"
-        component={HomeScreen} // Use the separated HomeScreen component
+        component={HomeScreen}
         options={{
           title: 'Home',
           headerShown: false,
