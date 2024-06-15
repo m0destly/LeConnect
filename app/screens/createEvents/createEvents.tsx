@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, 
+  TouchableOpacity, ScrollView, KeyboardAvoidingView, 
+  Platform, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import firestore from "@react-native-firebase/firestore"
+import firebase from 'firebase/compat/app';
 
 const CreateEventsScreen = ({ navigation }) => {
 
-  const submitEvent = () => {
-    navigation.navigate('Login');
-  };
-
-  const [title, onChangeTitle] = useState('');
+  const [title, setTitle] = useState('');
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [categories, setCategories] = useState([
@@ -19,7 +19,7 @@ const CreateEventsScreen = ({ navigation }) => {
     { label: 'Others', value: 'others' },
   ]);
 
-  const [description, onChangeDescription] = useState('');
+  const [description, setDescription] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
@@ -31,6 +31,21 @@ const CreateEventsScreen = ({ navigation }) => {
     setDatePickerVisibility(false);
   };
 
+  const createEvents = async () => {
+    try {
+      await firebase.firestore().collection("events").add({
+        Title: {title},
+        Category: {value},
+        Description: {description},
+        TimeCreated: {selectedDate},
+      });
+      Alert.alert("Success", "Event created successfully!");
+      navigation.goBack(); // Navigate back after successful creation
+    } catch (error : any) {
+      Alert.alert("Error", "Failed to create event: " + error.message);
+    }
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -39,7 +54,7 @@ const CreateEventsScreen = ({ navigation }) => {
           <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
-            onChangeText={onChangeTitle}
+            onChangeText={(text) => setTitle(text)}
             value={title}
             maxLength={50}
             placeholder="Enter title here..."
@@ -83,7 +98,7 @@ const CreateEventsScreen = ({ navigation }) => {
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={[styles.input, styles.descriptionInput]}
-            onChangeText={onChangeDescription}
+            onChangeText={setDescription}
             value={description}
             placeholder="Enter description here..."
             maxLength={500}
@@ -91,7 +106,7 @@ const CreateEventsScreen = ({ navigation }) => {
           />
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={submitEvent}>
+        <TouchableOpacity style={styles.submitButton} onPress={createEvents}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </View>
