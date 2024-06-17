@@ -14,7 +14,7 @@ const LoginScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, username, password);
-      console.log(response);
+      console.log(response + '\n');
       // redirect to homepage
       navigation.navigate('LeConnect');
 

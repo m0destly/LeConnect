@@ -1,25 +1,46 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight, TextInput, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc, QuerySnapshot } from 'firebase/firestore';
+import firestore from 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
 
 const HomeScreen = ({ navigation }) => {
-  // initialize service
-  const db = getFirestore();
-  // collction reference
-  const colRef = collection(db, 'events');
-  // get collection data
-  const events = [];
-  getDocs(colRef)
-    .then((snapshot) => {
-      snapshot.docs.forEach((doc) => {
-        events.push({ ...doc.data(), id: doc.id })
-      })
-      console.log(events);
-    })
-    .catch(err => {
-      console.log(err.message)
-    })
+
+  // start
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        // Get a collection reference
+        const collectionRef = firebase.firestore().collection('events');
+
+        // Get all documents in the collection
+        const querySnapshot = await collectionRef.get();
+
+        // Extract document data
+        const docs = querySnapshot.docs.map(doc => ({
+          id: doc.id, // Include document ID
+          ...doc.data() // Include document data
+        }));
+
+        // Update the state with the retrieved documents
+        setDocuments(docs);
+      } catch (err : any) {
+        // Update the state with the error
+        setError(err);
+      } finally {
+        // Update the loading state to false
+        setLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, []);
+  // end
 
   const saveData = () => {
     navigation.navigate('LoginScreen');
@@ -37,7 +58,7 @@ const HomeScreen = ({ navigation }) => {
           <Picker
             dropdownIconColor={'black'}
             selectedValue={selectedFilter}
-            onValueChange={(itemValue) => setSelectedFilter(itemValue)}
+            onValueChange={setSelectedFilter}
           >
             <Picker.Item label="Time" value="Time" />
             <Picker.Item label="Categories" value="Categories" />
@@ -45,13 +66,24 @@ const HomeScreen = ({ navigation }) => {
           </Picker>
         </View>
       </View>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeData}
-        value={data}
-        placeholder="Enter something"
-      />
-      <Button title="Save input" onPress={saveData} />
+      <View style={styles.eventsContainer}>
+        {/* start */}
+        {documents.length > 0 ? (
+          <FlatList
+            data={documents}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => (
+              <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
+                <Text>Title: {item.Title}</Text> 
+                <Text>Categories: {item.Category}</Text> 
+              </View>
+            )}
+          />
+        ) : (
+          <Text>No documents found</Text>
+        )}
+        {/* end */}
+      </View>
     </View>
   );
 }
@@ -86,6 +118,9 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+  },
+  eventsContainer: {
+
   },
 });
 

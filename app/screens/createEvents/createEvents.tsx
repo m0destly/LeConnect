@@ -6,6 +6,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import firestore from "@react-native-firebase/firestore"
 import firebase from 'firebase/compat/app';
+// import 'firebase/compat/firestore';
 
 const CreateEventsScreen = ({ navigation }) => {
 
@@ -34,16 +35,32 @@ const CreateEventsScreen = ({ navigation }) => {
   const createEvents = async () => {
     try {
       await firebase.firestore().collection("events").add({
-        Title: {title},
-        Category: {value},
-        Description: {description},
-        TimeCreated: {selectedDate},
+        Title: title,
+        Category: value,
+        Description: description,
+        TimeCreated: selectedDate,
       });
       Alert.alert("Success", "Event created successfully!");
-      navigation.goBack(); // Navigate back after successful creation
+      resetEvents();
+      //navigation.goBack(); // Navigate back after successful creation
     } catch (error : any) {
       Alert.alert("Error", "Failed to create event: " + error.message);
     }
+  };
+
+  const resetEvents = () => {
+    setTitle('');
+    setOpen(false);
+    setValue(null);
+    setCategories([
+      { label: 'Study', value: 'study' },
+      { label: 'Eat', value: 'eat' },
+      { label: 'Sports', value: 'sports' },
+      { label: 'Others', value: 'others' },
+    ]);
+    setDescription('');
+    setSelectedDate(new Date());
+    setDatePickerVisibility(false);
   };
 
   return (
@@ -54,7 +71,7 @@ const CreateEventsScreen = ({ navigation }) => {
           <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
-            onChangeText={(text) => setTitle(text)}
+            onChangeText={setTitle}
             value={title}
             maxLength={50}
             placeholder="Enter title here..."
@@ -103,6 +120,7 @@ const CreateEventsScreen = ({ navigation }) => {
             placeholder="Enter description here..."
             maxLength={500}
             multiline={true}
+            blurOnSubmit={true}
           />
         </View>
 
