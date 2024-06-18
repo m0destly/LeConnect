@@ -34,11 +34,11 @@ const CreateEventsScreen = ({ navigation }) => {
 
   const createEvents = async () => {
     try {
-      await firebase.firestore().collection("events").add({
+      await firebase.firestore().collection("event2").add({
         Title: title,
         Category: value,
         Description: description,
-        TimeCreated: selectedDate,
+        TimeCreated: selectedDate.toLocaleTimeString(),
       });
       Alert.alert("Success", "Event created successfully!");
       resetEvents();

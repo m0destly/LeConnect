@@ -1,54 +1,102 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight, TextInput, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc, QuerySnapshot } from 'firebase/firestore';
+import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc, QuerySnapshot, Timestamp } from 'firebase/firestore';
 import firestore from 'firebase/compat/app';
 import firebase from 'firebase/compat/app';
+import LoginScreen from '../login/login';
 
 const HomeScreen = ({ navigation }) => {
 
-  // start
-  const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const [eachData, setEachData] = useState([]);
+  
   useEffect(() => {
-    const fetchDocuments = async () => {
+    const test = async () => {
       try {
-        // Get a collection reference
-        const collectionRef = firebase.firestore().collection('events');
-
-        // Get all documents in the collection
-        const querySnapshot = await collectionRef.get();
-
-        // Extract document data
-        const docs = querySnapshot.docs.map(doc => ({
-          id: doc.id, // Include document ID
-          ...doc.data() // Include document data
-        }));
-
-        // Update the state with the retrieved documents
-        setDocuments(docs);
-      } catch (err : any) {
-        // Update the state with the error
-        setError(err);
-      } finally {
-        // Update the loading state to false
-        setLoading(false);
+        const snapShot = await firebase
+          .firestore()
+          .collection("events")
+          .get();
+        const docsArray = snapShot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        setEachData(docsArray);
+        console.log(eachData);
+      } catch (error: any) {
+        Alert.alert('error is' + error.message());
       }
     };
 
-    fetchDocuments();
+    test();
   }, []);
-  // end
-
+  
   const saveData = () => {
     navigation.navigate('LoginScreen');
   };
 
   const [selectedFilter, setSelectedFilter] = useState('');
-  const [data, onChangeData] = useState('');
 
+  type EventData = {
+    Title: String;
+    Category: Object[]; 
+    Description: String; 
+    TimeCreated: Timestamp;
+    id: String;
+  };
+
+  type EventProps = {
+    item: EventData;
+    onPress: () => void;
+    backgroundColor: String;
+    textColor: String;
+  }
+
+  // const Event = ({item, onPress, backgroundColor, textColor} : EventProps) => (
+    
+  //   <View>
+  //     <TouchableOpacity onPress={onPress}>
+  //       <Text style={{ fontSize: 24, backgroundColor: 'black', color: 'white' }}>
+  //         Title: {item.Title}
+  //       </Text>
+  //       <Text>
+  //         Category: {item.Category.toString()}
+  //       </Text>
+  //       <Text>
+  //         Time: {item.TimeCreated.toDate().toString().substring(0, 24)}
+  //       </Text>
+  //     </TouchableOpacity>
+  //   </View>
+  // );
+  const Event = ({ item, onPress }: EventProps) => (
+    <TouchableOpacity 
+      onPress={onPress} 
+      style={[styles.eventContainer]}>
+      <Text style={[styles.eventTitle]}>
+        {item.Title}
+      </Text>
+      <Text style={styles.eventCategory}>
+        Categories: {item.Category.join(', ')}
+      </Text>
+      <Text style={styles.eventTime}>
+        Time: {item.TimeCreated.toDate().toString().substring(0, 24)}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderEvent = ({item} : {item: EventData}) => {
+    const toEvent = () => {
+      // handles the logic when you press onto each event
+      // enter event page: see user created + description
+    }
+    return (
+      <Event
+        item={item}
+        onPress={toEvent}
+      />
+    );
+  };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home Screen</Text>
@@ -66,24 +114,12 @@ const HomeScreen = ({ navigation }) => {
           </Picker>
         </View>
       </View>
-      <View style={styles.eventsContainer}>
-        {/* start */}
-        {documents.length > 0 ? (
-          <FlatList
-            data={documents}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => (
-              <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
-                <Text>Title: {item.Title}</Text> 
-                <Text>Categories: {item.Category}</Text> 
-              </View>
-            )}
-          />
-        ) : (
-          <Text>No documents found</Text>
-        )}
-        {/* end */}
+      <View>
       </View>
+      <FlatList 
+        data={eachData}
+        renderItem={renderEvent}
+      />
     </View>
   );
 }
@@ -119,8 +155,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  eventsContainer: {
-
+  eventContainer: {
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#b5dafe',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+  eventCategory: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 4,
+  },
+  eventTime: {
+    fontSize: 14,
+    color: '#999',
   },
 });
 
