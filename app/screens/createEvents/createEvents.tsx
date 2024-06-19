@@ -6,6 +6,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import firestore from "@react-native-firebase/firestore"
 import firebase from 'firebase/compat/app';
+import { Timestamp } from 'firebase/firestore';
 // import 'firebase/compat/firestore';
 
 const CreateEventsScreen = ({ navigation }) => {
@@ -34,11 +35,11 @@ const CreateEventsScreen = ({ navigation }) => {
 
   const createEvents = async () => {
     try {
-      await firebase.firestore().collection("event2").add({
+      await firebase.firestore().collection('events').add({
         Title: title,
         Category: value,
         Description: description,
-        TimeCreated: selectedDate.toLocaleTimeString(),
+        TimeCreated: selectedDate,
       });
       Alert.alert("Success", "Event created successfully!");
       resetEvents();

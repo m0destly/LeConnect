@@ -5,24 +5,33 @@ import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc, QuerySna
 import firestore from 'firebase/compat/app';
 import firebase from 'firebase/compat/app';
 import LoginScreen from '../login/login';
+import eventPage from './eventPage';
 
 const HomeScreen = ({ navigation }) => {
 
   const [eachData, setEachData] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState('');
   
   useEffect(() => {
     const test = async () => {
       try {
-        const snapShot = await firebase
+        const result = await firebase
           .firestore()
           .collection("events")
-          .get();
-        const docsArray = snapShot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        setEachData(docsArray);
-        console.log(eachData);
+          .orderBy('TimeCreated', 'asc')
+          .onSnapshot(querySnapshot => {
+            const eventsFromDatabase = [];
+
+            querySnapshot.forEach(documentSnapshot => {
+              eventsFromDatabase.push({
+                id: documentSnapshot.id,
+                ...documentSnapshot.data(),
+              });
+              console.log(eventsFromDatabase);
+            });
+            setEachData(eventsFromDatabase);
+        });
+
       } catch (error: any) {
         Alert.alert('error is' + error.message());
       }
@@ -30,12 +39,6 @@ const HomeScreen = ({ navigation }) => {
 
     test();
   }, []);
-  
-  const saveData = () => {
-    navigation.navigate('LoginScreen');
-  };
-
-  const [selectedFilter, setSelectedFilter] = useState('');
 
   type EventData = {
     Title: String;
@@ -47,52 +50,45 @@ const HomeScreen = ({ navigation }) => {
 
   type EventProps = {
     item: EventData;
-    onPress: () => void;
     backgroundColor: String;
     textColor: String;
   }
 
-  // const Event = ({item, onPress, backgroundColor, textColor} : EventProps) => (
-    
-  //   <View>
-  //     <TouchableOpacity onPress={onPress}>
-  //       <Text style={{ fontSize: 24, backgroundColor: 'black', color: 'white' }}>
-  //         Title: {item.Title}
-  //       </Text>
-  //       <Text>
-  //         Category: {item.Category.toString()}
-  //       </Text>
-  //       <Text>
-  //         Time: {item.TimeCreated.toDate().toString().substring(0, 24)}
-  //       </Text>
-  //     </TouchableOpacity>
-  //   </View>
-  // );
-  const Event = ({ item, onPress }: EventProps) => (
-    <TouchableOpacity 
-      onPress={onPress} 
-      style={[styles.eventContainer]}>
-      <Text style={[styles.eventTitle]}>
-        {item.Title}
-      </Text>
-      <Text style={styles.eventCategory}>
-        Categories: {item.Category.join(', ')}
-      </Text>
-      <Text style={styles.eventTime}>
-        Time: {item.TimeCreated.toDate().toString().substring(0, 24)}
-      </Text>
-    </TouchableOpacity>
-  );
+  const Event = ({ item }: EventProps) => {
 
-  const renderEvent = ({item} : {item: EventData}) => {
     const toEvent = () => {
       // handles the logic when you press onto each event
       // enter event page: see user created + description
-    }
+      navigation.navigate('EventPage', {
+        Title: item.Title,
+        Category: item.Category,
+        TimeCreated: item.TimeCreated.toDate().toString().substring(0, 24),
+        id: item.id,
+        Description: item.Description,
+      });
+    };
+
+    return (
+      <TouchableOpacity
+        onPress={toEvent}
+        style={[styles.eventContainer]}>
+        <Text style={[styles.eventTitle]}>
+          {item.Title}
+        </Text>
+        <Text style={styles.eventCategory}>
+          Categories: {item.Category.join(', ')}
+        </Text>
+        <Text style={styles.eventTime}>
+          Time: {item.TimeCreated.toDate().toString().substring(0, 24)}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderEvent = ({item} : {item: EventData}) => {
     return (
       <Event
         item={item}
-        onPress={toEvent}
       />
     );
   };
