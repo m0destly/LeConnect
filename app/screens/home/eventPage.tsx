@@ -14,10 +14,12 @@ const EventPage = ({ route, navigation }) => {
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.title}>{Title}</Text>
-          <Text style={styles.time}>{TimeCreated}</Text>
-          
+        <View style={{flexDirection: 'row'}}>
+        <Text style={styles.timeHeader}>Time: </Text>
+          <Text style={styles.time}>{TimeCreated.substring(0, 21)}</Text>
+        </View>
+        <Text style={styles.descriptionTitle}>Description</Text>
           <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionTitle}>Description</Text>
             <Text style={styles.descriptionText}>{Description}</Text>
           </View>
           
@@ -25,7 +27,6 @@ const EventPage = ({ route, navigation }) => {
             <Button
               title='Join Event!'
               onPress={() => navigation.navigate('LeConnect')}
-              color='#0079D3' 
             />
           </View>
         </View>
@@ -56,20 +57,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: 'white', 
   },
+  timeHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   time: {
     fontSize: 18,
     marginBottom: 10,
     color: 'lightgrey',
+    backgroundColor: 'black',
+    borderRadius: 20,
+    paddingLeft: 10,
+    borderLeftWidth: 10,
   },
   descriptionContainer: {
-    backgroundColor: 'rgba(0,0,0,0.5)', 
+    backgroundColor: 'rgba(0,0,0,0.7)', 
     padding: 20, 
     borderRadius: 10, 
     marginBottom: 20,
     height: 350,
   },
   descriptionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
     marginBottom: 10,
