@@ -7,7 +7,9 @@ import firebase from 'firebase/compat/app';
 import LoginScreen from '../login/login';
 import eventPage from './eventPage';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
+
+  const { userID } = route.params;
 
   const [eachData, setEachData] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -27,8 +29,8 @@ const HomeScreen = ({ navigation }) => {
                 id: documentSnapshot.id,
                 ...documentSnapshot.data(),
               });
-              console.log(eventsFromDatabase);
             });
+            console.log(eventsFromDatabase);
             setEachData(eventsFromDatabase);
         });
 
@@ -95,7 +97,7 @@ const HomeScreen = ({ navigation }) => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
+      <Text style={styles.title}>Home Screen {userID}</Text>
       <View style={styles.filterContainer}>
         <Text style={styles.filterText}>Sort by:</Text>
         <View style={styles.pickerContainer}>

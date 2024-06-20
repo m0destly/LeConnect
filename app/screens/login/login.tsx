@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -14,10 +14,14 @@ const LoginScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, username, password);
-      console.log(response + '\n');
-      // redirect to homepage
-      navigation.navigate('LeConnect');
-
+      const currUser = response.user;
+      console.log(currUser);
+      if (currUser) {
+        navigation.navigate('LeConnect', {
+          screen: "Home",
+          params: { userID: currUser.uid },
+        });
+      }
     } catch (error: any) {
       console.error('Sign-in Error:', error);
       if (error.code === 'auth/invalid-email') {
@@ -31,6 +35,7 @@ const LoginScreen = ({ navigation }) => {
       }
     } finally {
       setLoading(false);
+      
     }
     // Example: You might want to send the login credentials to your backend server for authentication
     // third case: successful, transit to static home page

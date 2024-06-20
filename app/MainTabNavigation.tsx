@@ -8,7 +8,8 @@ import CreateEventsScreen from './screens/createEvents/createEvents';
 
 const Tab = createBottomTabNavigator();
 
-const MainTabNavigator = () => {
+const MainTabNavigator = ( navigation ) => {
+
   return (
     <Tab.Navigator
       initialRouteName="Home"

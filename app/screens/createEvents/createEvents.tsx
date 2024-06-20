@@ -109,7 +109,7 @@ const CreateEventsScreen = ({ navigation }) => {
             onConfirm={setSelectedDate}
             onCancel={hideDatePicker}
           />
-          <Text style={styles.selectedDateText}>Selected: {selectedDate.toLocaleString()}</Text>
+          <Text style={styles.selectedDateText}>Selected: {selectedDate.toString().substring(0, 21)}</Text>
         </View>
 
         <View style={styles.inputContainer}>
