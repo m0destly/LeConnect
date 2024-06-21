@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, 
   TouchableOpacity, ScrollView, KeyboardAvoidingView, 
   Platform, Alert } from 'react-native';
@@ -7,10 +7,11 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import firestore from "@react-native-firebase/firestore"
 import firebase from 'firebase/compat/app';
 import { Timestamp } from 'firebase/firestore';
-// import 'firebase/compat/firestore';
+import UserContext from '@/app/userContext';
 
 const CreateEventsScreen = ({ navigation }) => {
 
+  const { user } = useContext(UserContext);
   const [title, setTitle] = useState('');
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
@@ -39,7 +40,9 @@ const CreateEventsScreen = ({ navigation }) => {
         Title: title,
         Category: value,
         Description: description,
-        TimeCreated: selectedDate,
+        Time: selectedDate,
+        Creator: user.id,
+        Participants: new Array<String>(),
       });
       Alert.alert("Success", "Event created successfully!");
       resetEvents();

@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import UserContext from '@/app/userContext';
 
 const LoginScreen = ({ navigation }) => {
-  const { saveUser } = useContext(UserContext);
 
+  const { saveUser } = useContext(UserContext);
+  
+  const usernameRef = useRef();
+  const passwordRef = useRef();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,6 +27,7 @@ const LoginScreen = ({ navigation }) => {
           id: currUser.uid,
         };
         saveUser(userData);
+        resetLogin();
         navigation.navigate('LeConnect');
       }
     } catch (error: any) {
@@ -45,6 +49,13 @@ const LoginScreen = ({ navigation }) => {
     // third case: successful, transit to static home page
   };
 
+  const resetLogin = () => {
+    usernameRef.current.clear();
+    passwordRef.current.clear();
+    setUsername('');
+    setPassword('');
+  }
+
   const handleSignUp = () => {
     // navigation 
     navigation.navigate('Register');
@@ -55,6 +66,7 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.logo}>LeConnect</Text>
       <View style={styles.inputView}>
         <TextInput
+          ref={usernameRef}
           style={styles.inputText}
           placeholder="Username"
           placeholderTextColor="#ffffff"
@@ -63,11 +75,12 @@ const LoginScreen = ({ navigation }) => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          ref={passwordRef}
           style={styles.inputText}
           placeholder="Password"
           placeholderTextColor="#ffffff"
-          secureTextEntry={true}
           onChangeText={setPassword}
+          secureTextEntry={true}
         />
       </View>
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>

@@ -11,7 +11,7 @@ const EventsHubScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>user id: {user.id}</Text>
+      <Text style={styles.title}>User ID: {user.id}</Text>
       <Button title="Go to Details" onPress={handlePress} />
     </View>
   );

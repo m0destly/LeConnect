@@ -20,7 +20,7 @@ const HomeScreen = ({ navigation }) => {
         const result = await firebase
           .firestore()
           .collection("events")
-          .orderBy('TimeCreated', 'asc')
+          .orderBy('Time', 'asc')
           .onSnapshot(querySnapshot => {
             const eventsFromDatabase = [];
 
@@ -46,8 +46,10 @@ const HomeScreen = ({ navigation }) => {
     Title: String;
     Category: Object[]; 
     Description: String; 
-    TimeCreated: Timestamp;
+    Time: Timestamp;
     id: String;
+    Creator: String;
+    Participants: String[];
   };
 
   type EventProps = {
@@ -64,9 +66,11 @@ const HomeScreen = ({ navigation }) => {
       navigation.navigate('EventPage', {
         Title: item.Title,
         Category: item.Category,
-        TimeCreated: item.TimeCreated.toDate().toString().substring(0, 24),
+        Time: item.Time.toDate().toString().substring(0, 21),
         id: item.id,
         Description: item.Description,
+        Creator: item.Creator,
+        Participants: item.Participants,
       });
     };
 
@@ -81,7 +85,7 @@ const HomeScreen = ({ navigation }) => {
           Categories: {item.Category.join(', ')}
         </Text>
         <Text style={styles.eventTime}>
-          Time: {item.TimeCreated.toDate().toString().substring(0, 24)}
+          Time: {item.Time.toDate().toString().substring(0, 21)}
         </Text>
       </TouchableOpacity>
     );
@@ -97,7 +101,7 @@ const HomeScreen = ({ navigation }) => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen {user.id}</Text>
+      <Text style={styles.title}>Home Screen</Text>
       <View style={styles.filterContainer}>
         <Text style={styles.filterText}>Sort by:</Text>
         <View style={styles.pickerContainer}>

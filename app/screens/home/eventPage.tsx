@@ -1,9 +1,31 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, ImageBackground } from 'react-native'
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, Button, ImageBackground, Alert } from 'react-native';
+import firestore from 'firebase/compat/app';
+import firebase from 'firebase/compat/app';
+import UserContext from '@/app/userContext';
 
 const EventPage = ({ route, navigation }) => {
   
-  const { Title, Category, TimeCreated, Description } = route.params;
+  const { user } = useContext(UserContext);
+  const { Title, Category, Time, id, Description, Creator, Participants } = route.params;
+
+  const joinEvent = async () => {
+    try {
+      Participants.includes(user.id) ? Participants : Participants.push(user.id);
+      await firebase.firestore()
+      .collection("events")
+      .doc(id)
+      .update({
+        Participants: Participants,
+      })
+      .then(() => {
+        Alert.alert('Successfully joined event!');
+      });
+    } catch (error: any) {
+      Alert.alert('error');
+      console.log(error.message);
+    }
+  };
 
   return (
     <ImageBackground
@@ -16,7 +38,7 @@ const EventPage = ({ route, navigation }) => {
           <Text style={styles.title}>{Title}</Text>
         <View style={{flexDirection: 'row'}}>
         <Text style={styles.timeHeader}>Time: </Text>
-          <Text style={styles.time}>{TimeCreated.substring(0, 21)}</Text>
+          <Text style={styles.time}>{Time}</Text>
         </View>
         <Text style={styles.descriptionTitle}>Description</Text>
           <View style={styles.descriptionContainer}>
@@ -26,7 +48,7 @@ const EventPage = ({ route, navigation }) => {
           <View style={styles.footer}>
             <Button
               title='Join Event!'
-              onPress={() => navigation.navigate('LeConnect')}
+              onPress={joinEvent}
             />
           </View>
         </View>
