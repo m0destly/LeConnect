@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import UserContext from '@/app/userContext';
 
 const LoginScreen = ({ navigation }) => {
+  const { saveUser } = useContext(UserContext);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,10 +20,11 @@ const LoginScreen = ({ navigation }) => {
       const currUser = response.user;
       console.log(currUser);
       if (currUser) {
-        navigation.navigate('LeConnect', {
-          screen: "Home",
-          params: { userID: currUser.uid },
-        });
+        const userData = {
+          id: currUser.uid,
+        };
+        saveUser(userData);
+        navigation.navigate('LeConnect');
       }
     } catch (error: any) {
       console.error('Sign-in Error:', error);
@@ -54,7 +58,7 @@ const LoginScreen = ({ navigation }) => {
           style={styles.inputText}
           placeholder="Username"
           placeholderTextColor="#ffffff"
-          onChangeText={text => setUsername(text)}
+          onChangeText={setUsername}
         />
       </View>
       <View style={styles.inputView}>
@@ -63,7 +67,7 @@ const LoginScreen = ({ navigation }) => {
           placeholder="Password"
           placeholderTextColor="#ffffff"
           secureTextEntry={true}
-          onChangeText={text => setPassword(text)}
+          onChangeText={setPassword}
         />
       </View>
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>

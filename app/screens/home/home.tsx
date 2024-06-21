@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight, TextInput, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc, QuerySnapshot, Timestamp } from 'firebase/firestore';
 import firestore from 'firebase/compat/app';
 import firebase from 'firebase/compat/app';
 import LoginScreen from '../login/login';
-import eventPage from './eventPage';
+import eventPage from './eventPage'
+import UserContext from '@/app/userContext';
 
-const HomeScreen = ({ route, navigation }) => {
-
-  const { userID } = route.params;
-
+const HomeScreen = ({ navigation }) => {
+  
+  const { user, clearUser } = useContext(UserContext);
   const [eachData, setEachData] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('');
   
@@ -97,7 +97,7 @@ const HomeScreen = ({ route, navigation }) => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen {userID}</Text>
+      <Text style={styles.title}>Home Screen {user.id}</Text>
       <View style={styles.filterContainer}>
         <Text style={styles.filterText}>Sort by:</Text>
         <View style={styles.pickerContainer}>

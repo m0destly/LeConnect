@@ -5,19 +5,22 @@ import RegisterScreen from './screens/register/register';
 import { NavigationContainer } from '@react-navigation/native';
 import MainTabNavigator from './MainTabNavigation';
 import EventPage from './screens/home/eventPage';
+import { UserProvider } from './userContext';
 
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
   return (
-    //<NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="LeConnect" component={MainTabNavigator}/>
-        <Stack.Screen name="EventPage" component={EventPage}/>
-        <Stack.Screen name="Register" component={RegisterScreen}/>
-      </Stack.Navigator>
-    //</NavigationContainer>
+    <UserProvider>
+      <NavigationContainer independent={true}>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="LeConnect" component={MainTabNavigator} />
+          <Stack.Screen name="EventPage" component={EventPage} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserProvider>
   );
 };
 
