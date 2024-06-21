@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, Button, ImageBackground, Alert } from 'react-native';
-import firestore from 'firebase/compat/app';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 

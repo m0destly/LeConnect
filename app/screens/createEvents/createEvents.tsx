@@ -1,12 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Button, TextInput, 
-  TouchableOpacity, ScrollView, KeyboardAvoidingView, 
-  Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, 
+  TouchableOpacity, ScrollView, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import firestore from "@react-native-firebase/firestore"
 import firebase from 'firebase/compat/app';
-import { Timestamp } from 'firebase/firestore';
 import UserContext from '@/app/userContext';
 
 const CreateEventsScreen = ({ navigation }) => {
