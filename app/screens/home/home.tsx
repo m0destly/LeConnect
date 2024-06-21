@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableHighlight, TextInput, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { getFirestore, collection, query, getDocs, addDoc, setDoc, doc, QuerySnapshot, Timestamp } from 'firebase/firestore';
-import firestore from 'firebase/compat/app';
+import { Timestamp } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
-import LoginScreen from '../login/login';
-import eventPage from './eventPage'
 import UserContext from '@/app/userContext';
 
 const HomeScreen = ({ navigation }) => {
@@ -15,11 +12,11 @@ const HomeScreen = ({ navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState('');
   
   useEffect(() => {
-    const test = async () => {
+    const loadEvents = async () => {
       try {
-        const result = await firebase
+        await firebase
           .firestore()
-          .collection("events")
+          .collection('events')
           .orderBy('Time', 'asc')
           .onSnapshot(querySnapshot => {
             const eventsFromDatabase = [];
@@ -39,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
       }
     };
 
-    test();
+    loadEvents();
   }, []);
 
   type EventData = {
@@ -105,7 +102,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.filterContainer}>
         <Text style={styles.filterText}>Sort by:</Text>
         <View style={styles.pickerContainer}>
-          <Picker
+          <Picker 
             dropdownIconColor={'black'}
             selectedValue={selectedFilter}
             onValueChange={setSelectedFilter}
@@ -129,7 +126,7 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: 20,
   },
   title: {
     fontSize: 24,
