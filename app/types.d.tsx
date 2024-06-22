@@ -13,14 +13,15 @@ export interface EventData {
   Participants: String[];
 };
 
-export interface EventProps {
-  item: EventData;
-  backgroundColor: String;
-  textColor: String;
-  onPress: () => void
-}; 
+export interface userProfile {
+  Name: String;
+  Age: Number;
+  Gender: String;
+  Contact: String;
+  Biography: String;
+};
 
-export const Event = ({ item, onPress }: EventProps) => {
+export const Event = ({item, onPress}) => {
   return (
     <TouchableOpacity
       onPress={onPress}
