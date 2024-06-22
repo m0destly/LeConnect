@@ -1,15 +1,40 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, FlatList } from 'react-native';
 import UserContext from '@/app/userContext';
 import firebase from 'firebase/compat';
-
+import LoginScreen from '../login/login';
+import { EventData, Event } from '@/app/types.d';
+import EventPage from '../home/eventPage';
+import useTailwind from 'tailwind-rn';
 const EventsHubScreen = ({ navigation }) => {
   
   const { user, clearUser } = useContext(UserContext);
   const [eachEvent, setEachEvent] = useState([]);
+  const [joinedEvent, setJoinedEvent] = useState([]);
 
   const handlePress = () => {
     navigation.navigate('LoginScreen');
+  };
+
+  const toEvent = (item: EventData) => {
+    navigation.navigate('EventPage', {
+      Title: item.Title,
+      Category: item.Category,
+      Time: item.Time.toDate().toString().substring(0, 21),
+      id: item.id,
+      Description: item.Description,
+      Creator: item.Creator,
+      Participants: item.Participants,
+    });
+  };
+
+  const renderEvent = ({item}) => {
+    return (
+      <Event
+        item={item}
+        onPress={() => toEvent(item)}
+      />
+    );
   };
 
   useEffect(() => {
@@ -18,9 +43,7 @@ const EventsHubScreen = ({ navigation }) => {
         .firestore()
         .collection('events')
         .where('Creator', "==", user.id)
-        // .orderBy('Time', 'asc')
-        // orderBy and where conflict
-        // https://stackoverflow.com/questions/56614131/firestore-orderby-and-where-conflict
+        .orderBy('Time', 'asc')
         .onSnapshot(querySnapshot => {
           const myEventsDatabase = [];
 
@@ -34,13 +57,48 @@ const EventsHubScreen = ({ navigation }) => {
         });
     };
 
+    const joinedEvents = async () => {
+      await firebase
+        .firestore()
+        .collection('events')
+        .where('Participants', "array-contains", user.id)
+        .orderBy('Time', 'asc')
+        .onSnapshot(querySnapshot => {
+          const joinedEventsDatabase = [];
+
+          querySnapshot.forEach(documentSnapshot => {
+            joinedEventsDatabase.push({
+              id: documentSnapshot.id,
+              ...documentSnapshot.data(),
+            });
+          });
+          setJoinedEvent(joinedEventsDatabase);
+        });
+    };
+    
     myEvents();
+    joinedEvents();
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>User ID: {user.id}</Text>
-      <Button title="Go to Details" onPress={handlePress} />
+      <Text style={styles.title}>Events Created By Me</Text>
+      <View>
+        <FlatList
+          style={styles.flatList}
+          data={eachEvent}
+          renderItem={renderEvent}
+
+        />
+      </View>
+      <Text style={styles.title}>Events Joined</Text>
+      <View>
+        <FlatList
+          style={styles.flatList}
+          data={joinedEvent}
+          renderItem={renderEvent}
+        />
+      </View>
     </View>
   );
 };
@@ -48,13 +106,15 @@ const EventsHubScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'red',
+    padding: 20,
   },
   title: {
     fontSize: 24,
-    marginBottom: 20,
+    textAlign: 'center',
+    marginVertical: 16,
+  },
+  flatList: {
+    height: 300,
   },
 });
 
