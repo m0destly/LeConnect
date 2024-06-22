@@ -100,6 +100,7 @@ const EventsHubScreen = ({ navigation }) => {
         />
       </View>
     </View>
+    
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, ImageBackground, Alert } from 'react-native';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
@@ -7,6 +7,11 @@ const EventPage = ({ route, navigation }) => {
   
   const { user } = useContext(UserContext);
   const { Title, Category, Time, id, Description, Creator, Participants } = route.params;
+  const [isCreator, setIsCreator] = useState(false);
+
+  useEffect(() => {
+    Creator == user.id ? setIsCreator(true) : setIsCreator(false);
+  }, []); 
 
   const joinEvent = async () => {
     try {
@@ -48,6 +53,7 @@ const EventPage = ({ route, navigation }) => {
             <Button
               title='Join Event!'
               onPress={joinEvent}
+              disabled={isCreator}
             />
           </View>
         </View>
