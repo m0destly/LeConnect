@@ -83,7 +83,7 @@ const EventsHubScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Events Created By Me</Text>
-      <View>
+      <View style={styles.flatListContainer}>
         <FlatList
           style={styles.flatList}
           data={eachEvent}
@@ -92,7 +92,7 @@ const EventsHubScreen = ({ navigation }) => {
         />
       </View>
       <Text style={styles.title}>Events Joined</Text>
-      <View>
+      <View style={styles.flatListContainer}>
         <FlatList
           style={styles.flatList}
           data={joinedEvent}
@@ -100,7 +100,6 @@ const EventsHubScreen = ({ navigation }) => {
         />
       </View>
     </View>
-    
   );
 };
 
@@ -113,6 +112,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     marginVertical: 16,
+  },
+  flatListContainer: {
+    height: '40%',
   },
   flatList: {
     height: 300,

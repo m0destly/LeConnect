@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FIREBASE_AUTH } from '@/FirebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import UserContext from '@/app/userContext';
 
 const RegisterScreen = ({ navigation }) => {
+  const { saveUser } = useContext(UserContext);
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,8 +23,15 @@ const RegisterScreen = ({ navigation }) => {
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log(response);
-      Alert.alert('Success', 'Account created successfully');
-      navigation.navigate('Login');
+      const newUser = response.user;
+      if (newUser) {
+        const userData = {
+          id: newUser.uid,
+        };
+        saveUser(userData);
+        Alert.alert('Success', 'Account created successfully');
+        navigation.navigate('NewProfile');
+      }
     } catch (error: any) {
       console.error('Sign-up Error:', error);
       if (error.code === 'auth/email-already-in-use') {
@@ -52,7 +62,7 @@ const RegisterScreen = ({ navigation }) => {
           style={styles.inputText}
           placeholder="Email"
           placeholderTextColor="#ffffff"
-          onChangeText={text => setEmail(text)}
+          onChangeText={setEmail}
         />
       </View>
       <View style={styles.inputView}>
@@ -61,7 +71,7 @@ const RegisterScreen = ({ navigation }) => {
           placeholder="Password"
           placeholderTextColor="#ffffff"
           secureTextEntry={true}
-          onChangeText={text => setPassword(text)}
+          onChangeText={setPassword}
         />
       </View>
       <View style={styles.inputView}>
@@ -70,7 +80,7 @@ const RegisterScreen = ({ navigation }) => {
           placeholder="Confirm Password"
           placeholderTextColor="#ffffff"
           secureTextEntry={true}
-          onChangeText={text => setConfirmPassword(text)}
+          onChangeText={setConfirmPassword}
         />
       </View>
       <TouchableOpacity style={styles.signUpBtn} onPress={handleSignUp}>
