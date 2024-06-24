@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Timestamp } from 'firebase/firestore';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 import { EventData, Event } from '@/app/types.d';
@@ -10,7 +9,7 @@ const HomeScreen = ({ navigation }) => {
   
   const { user, clearUser } = useContext(UserContext);
   const [eachData, setEachData] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('Time');
   
   useEffect(() => {
     const loadEvents = async () => {
@@ -18,7 +17,7 @@ const HomeScreen = ({ navigation }) => {
         await firebase
           .firestore()
           .collection('events')
-          .orderBy('Time', 'asc')
+          .orderBy(selectedFilter, 'asc')
           .onSnapshot(querySnapshot => {
             const eventsFromDatabase = [];
 
@@ -38,7 +37,7 @@ const HomeScreen = ({ navigation }) => {
     };
 
     loadEvents();
-  }, []);
+  }, [selectedFilter]);
 
   const toEvent = (item: EventData) => {
     // handles the logic when you press onto each event
@@ -75,8 +74,8 @@ const HomeScreen = ({ navigation }) => {
             onValueChange={setSelectedFilter}
           >
             <Picker.Item label="Time" value="Time" />
-            <Picker.Item label="Categories" value="Categories" />
-            <Picker.Item label="Distance" value="Distance" />
+            <Picker.Item label="Title" value="Title" />
+            <Picker.Item label="Category" value="Category" />
           </Picker>
         </View>
       </View>

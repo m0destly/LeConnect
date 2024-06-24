@@ -4,7 +4,7 @@ import React, { createContext, useEffect, useState } from 'react';
 const UserContext = createContext();
 
 export const UserProvider = ( { children } ) => {
-    const [user, setUser] = useState(null);
+     const [user, setUser] = useState(null);
      useEffect(() => {
         const loadUserData = async () => {
             const userData = await AsyncStorage.getItem('user');

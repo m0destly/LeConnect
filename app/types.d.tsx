@@ -1,7 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import React from "react";
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
-import EventPage from "./screens/home/eventPage";
 
 export interface EventData {
   Title: String;
@@ -11,14 +10,6 @@ export interface EventData {
   id: String;
   Creator: String;
   Participants: String[];
-};
-
-export interface userProfile {
-  Name: String;
-  Age: Number;
-  Gender: String;
-  Contact: String;
-  Biography: String;
 };
 
 export const Event = ({item, onPress}) => {

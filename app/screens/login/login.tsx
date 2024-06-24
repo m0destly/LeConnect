@@ -3,10 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import UserContext from '@/app/userContext';
+import firebase from 'firebase/compat';
 
 const LoginScreen = ({ navigation }) => {
 
-  const { saveUser } = useContext(UserContext);
+  const { user, saveUser } = useContext(UserContext);
   
   const usernameRef = useRef();
   const passwordRef = useRef();
@@ -28,7 +29,17 @@ const LoginScreen = ({ navigation }) => {
         };
         saveUser(userData);
         resetLogin();
-        navigation.navigate('LeConnect');
+        // to get the document
+        const documentSnapshot = await firebase.firestore()
+          .collection('users')
+          .where('User', '==', user.id)
+          .get();
+        if (!documentSnapshot.empty) {
+          navigation.navigate('LeConnect');
+        } else {
+          navigation.navigate('NewProfile');
+          Alert.alert('Error:', 'Create your profile to proceed');
+        }
       }
     } catch (error: any) {
       console.error('Sign-in Error:', error);

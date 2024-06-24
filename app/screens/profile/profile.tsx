@@ -1,104 +1,80 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-// import { userProfile } from '@/app/types.d'; 
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import firebase from 'firebase/compat';
 import UserContext from '@/app/userContext';
 
 const ProfileScreen = ({ navigation }) => {
-  
-  const { user } = useContext(UserContext);
-  const [name, getName] = useState('');
-  const [age, getAge] = useState();
-  const [gender, getGender] = useState('');
-  const [contact, getContact] = useState('');
-  const [bio, getBio] = useState('');
-  const [profile, setProfile] = useState({
-    Name: '',
-    Age: '',
-    Gender: '',
-    Contact: '',
-    Bio: '',
-  });
-  
-  const handlePress = () => {
-    navigation.navigate('LoginScreen');
-  };
-  
-  const updateProfile = async () => {
-    try {
-      await firebase.firestore().collection('users').add({
-        Name: name,
-        Age: age,
-        Gender: gender,
-        Contact: contact,
-        Bio: bio,
-      });
-      Alert.alert("Success", "Your details have been updated!");
 
+  const { user } = useContext(UserContext);
+  const [userData, getUserData] = useState<userProfile>();
+  const [isEditing, setIsEditing] = useState(false);
+  const [docID, getDocID] = useState('');
+
+  type userProfile = {
+    Name: String;
+    Age: Number;
+    Gender: String;
+    Contact: String;
+    Bio: String;
+    User: String;
+  };
+
+  const retrieveProfile = async () => {
+    try {
+      await firebase.firestore()
+        .collection('users')
+        .where('User', '==', user.id)
+        .onSnapshot(querySnapshot => {
+          let test: userProfile;
+            querySnapshot.forEach(documentSnapshot => {
+              getDocID(documentSnapshot.id);
+              test = documentSnapshot.data();
+            });
+          getUserData(test);
+        });
     } catch (error: any) {
-      Alert.alert("Error", "Failed to update details" + error.message);
+      Alert.alert("Error", "Too Bad" + error.message);
     }
   };
 
-  // const retrieveProfile = async () => {
-  //   try {
-  //     await firebase.firestore()
-  //       .collection('users')
-  //       .doc(user.id)
-  //       .get()
-  //       .then(documentSnapshot => {
-  //         getProfile(documentSnapshot.data());
-  //       });
-  //     getName(profile.Name);
-  //     getAge(profile.Age);
-  //     getGender(profile?.Gender);
-  //     getContact(profile?.Contact);
-  //     getBio(profile?.Bio);
-  //   } catch (error: any) {
-  //     Alert.alert("Error", "Too Bad");
-  //   }
-  // };
-
+  const handleEditPress = () => {
+    navigation.navigate('UpdateProfile', {
+      Name: userData?.Name,
+      Age: userData?.Age,
+      Gender: userData?.Gender,
+      Contact: userData?.Contact,
+      Bio: userData?.Bio,
+      DocID: docID,
+    });
+  };
+  
+  useEffect(() => {
+    retrieveProfile();
+  }, []);
+  
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Name:</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.Name}
-        onChangeText={(text) => setProfile({ ...profile, Name: text })}
-      />
-      
-      <Text style={styles.label}>Age:</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.Age}
-        onChangeText={(text) => setProfile({ ...profile, Age: text })}
-        keyboardType="numeric"
-      />
-      
-      <Text style={styles.label}>Gender:</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.Gender}
-        onChangeText={(text) => setProfile({ ...profile, Gender: text })}
-      />
-      
-      <Text style={styles.label}>Contact:</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.Contact}
-        onChangeText={(text) => setProfile({ ...profile, Contact: text })}
-      />
-      
-      <Text style={styles.label}>Bio:</Text>
-      <TextInput
-        style={styles.input}
-        value={profile.Bio}
-        onChangeText={(text) => setProfile({ ...profile, Bio: text })}
-        multiline
-      />
-      
-      <Button title="Update Profile" onPress={handlePress} />
+      <View style={styles.profileContainer}>
+        <View style={styles.profileField}>
+          <Text style={styles.label}>Name:</Text>
+          <Text style={styles.text}>{userData?.Name}</Text>
+        </View>
+        <View style={styles.profileField}>
+          <Text style={styles.label}>Contact:</Text>
+          <Text style={styles.text}>{userData?.Contact}</Text>
+        </View>
+        <View style={styles.profileField}>
+          <Text style={styles.label}>Gender:</Text>
+          <Text style={styles.text}>{userData?.Gender}</Text>
+        </View>
+        <View style={styles.profileField}>
+          <Text style={styles.label}>Bio:</Text>
+          <Text style={styles.text}>{userData?.Bio}</Text>
+        </View>
+        <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
+          <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit'}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -106,19 +82,43 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f0f0f0',
   },
-  label: {
-    fontSize: 18,
+  profileContainer: {
+    width: '80%',
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  profileField: {
     marginBottom: 10,
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginBottom: 20,
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  text: {
+    fontSize: 16,
+  },
+  editButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  editButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
+
 export default ProfileScreen;
