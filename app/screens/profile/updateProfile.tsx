@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView, Image } from 'react-native';
 import firebase from 'firebase/compat';
 import UserContext from '@/app/userContext';
 

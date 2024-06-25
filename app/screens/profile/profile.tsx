@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 import firebase from 'firebase/compat';
 import UserContext from '@/app/userContext';
 
@@ -17,6 +17,7 @@ const ProfileScreen = ({ navigation }) => {
     Contact: String;
     Bio: String;
     User: String;
+    Pic: String;
   };
 
   const retrieveProfile = async () => {
@@ -25,12 +26,12 @@ const ProfileScreen = ({ navigation }) => {
         .collection('users')
         .where('User', '==', user.id)
         .onSnapshot(querySnapshot => {
-          let test: userProfile;
+          let profile: userProfile;
             querySnapshot.forEach(documentSnapshot => {
               getDocID(documentSnapshot.id);
-              test = documentSnapshot.data();
+              profile = documentSnapshot.data();
             });
-          getUserData(test);
+          getUserData(profile);
         });
     } catch (error: any) {
       Alert.alert("Error", "Too Bad" + error.message);
@@ -44,6 +45,7 @@ const ProfileScreen = ({ navigation }) => {
       Gender: userData?.Gender,
       Contact: userData?.Contact,
       Bio: userData?.Bio,
+      Pic: userData?.Pic,
       DocID: docID,
     });
   };
@@ -55,21 +57,29 @@ const ProfileScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        <View style={styles.profileField}>
-          <Text style={styles.label}>Name:</Text>
-          <Text style={styles.text}>{userData?.Name}</Text>
-        </View>
-        <View style={styles.profileField}>
-          <Text style={styles.label}>Contact:</Text>
-          <Text style={styles.text}>{userData?.Contact}</Text>
-        </View>
-        <View style={styles.profileField}>
-          <Text style={styles.label}>Gender:</Text>
-          <Text style={styles.text}>{userData?.Gender}</Text>
-        </View>
-        <View style={styles.profileField}>
-          <Text style={styles.label}>Bio:</Text>
-          <Text style={styles.text}>{userData?.Bio}</Text>
+        <View style={styles.profilePic}>
+          <View style={styles.profileDetails}>
+            <View style={styles.profileField}>
+              <Text style={styles.label}>Name:</Text>
+              <Text style={styles.text}>{userData?.Name}</Text>
+            </View>
+            <View style={styles.profileField}>
+              <Text style={styles.label}>Contact:</Text>
+              <Text style={styles.text}>{userData?.Contact}</Text>
+            </View>
+            <View style={styles.profileField}>
+              <Text style={styles.label}>Gender:</Text>
+              <Text style={styles.text}>{userData?.Gender}</Text>
+            </View>
+            <View style={styles.profileField}>
+              <Text style={styles.label}>Bio:</Text>
+              <Text style={styles.text}>{userData?.Bio}</Text>
+            </View>
+          </View>
+          <Image
+            source={{ uri: userData?.Pic }}
+            style={styles.image}
+          />
         </View>
         <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
           <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit'}</Text>
@@ -96,6 +106,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    alignItems: 'center',
+  },
+  profileDetails: {
+    flex: 1, 
+  },
+  profilePic: {
+    flexDirection:'row',
+    alignItems: 'center',
   },
   profileField: {
     marginBottom: 10,
@@ -110,14 +128,22 @@ const styles = StyleSheet.create({
   editButton: {
     backgroundColor: '#007bff',
     paddingVertical: 10,
+    paddingHorizontal: 100,
     alignItems: 'center',
     borderRadius: 5,
-    marginTop: 10,
+    marginTop: 20,
   },
   editButtonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+    width: '50%',
+  },
+  image: {
+    width: 150,
+    height: 150,
+    marginLeft: 20,
+    borderRadius: 75,
   },
 });
 
