@@ -18,6 +18,7 @@ const ProfileScreen = ({ navigation }) => {
     Bio: String;
     User: String;
     Pic: String;
+    PicName: String;
   };
 
   const retrieveProfile = async () => {
@@ -46,6 +47,7 @@ const ProfileScreen = ({ navigation }) => {
       Contact: userData?.Contact,
       Bio: userData?.Bio,
       Pic: userData?.Pic,
+      PicName: userData?.PicName,
       DocID: docID,
     });
   };

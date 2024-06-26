@@ -1,125 +1,113 @@
-// import React from 'react'
-// import { View, StyleSheet } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { View, StyleSheet, Modal, Text, TouchableOpacity } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
-// const ModalScreen = () => {
-//     return (
-//         <View style={styles.container}>
-//             {/* Modal in here */}
+const ModalScreen = ({ visible, onClose, setImage, setFileName }) => {
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      setFileName(result.assets[0].fileName);
+    }
+    onClose();
+  };
 
-//         </View>
-//     );
-// };
+  const takePicture = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      setFileName(result.assets[0].fileName);
+    }
+    onClose();
+  };
 
-// const styles = StyleSheet.create({
-//     container: {
-//         flexDirection: 'row',
-//     },
-// });
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalBackground}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Select a mode</Text>
+          
+          <TouchableOpacity style={styles.actionButton} onPress={takePicture}>
+            <MaterialCommunityIcons name="camera" size={40} color="white" />
+            <Text style={styles.buttonText}>Take Picture</Text>
+          </TouchableOpacity>
 
-// export default ModalScreen;
+          <TouchableOpacity style={styles.actionButton} onPress={pickImage}>
+            <MaterialCommunityIcons name="image" size={40} color="white" />
+            <Text style={styles.buttonText}>Pick Image</Text>
+          </TouchableOpacity>
 
-// import React, { useState } from 'react';
-// import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
-// const OptionsModal = () => {
-//   const [modalVisible, setModalVisible] = useState(false);
+const styles = StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    marginBottom: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 10,
+    width: '100%',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    marginLeft: 10,
+  },
+  closeButton: {
+    backgroundColor: '#FF4136',
+    padding: 10,
+    borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+});
 
-//   const openModal = () => {
-//     setModalVisible(true);
-//   };
-
-//   const closeModal = () => {
-//     setModalVisible(false);
-//   };
-
-//   const handleOptionPress = (option) => {
-//     alert(`You selected: ${option}`);
-//     closeModal();
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TouchableOpacity onPress={openModal} style={styles.openButton}>
-//         <Text style={styles.buttonText}>Open Options</Text>
-//       </TouchableOpacity>
-      
-//       <Modal
-//         transparent={true}
-//         animationType="slide"
-//         visible={modalVisible}
-//         onRequestClose={closeModal}
-//       >
-//         <View style={styles.modalOverlay}>
-//           <View style={styles.modalContainer}>
-//             <TouchableOpacity onPress={() => handleOptionPress('Camera')} style={styles.optionButton}>
-//               <Text style={styles.optionText}>Camera</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity onPress={() => handleOptionPress('Library')} style={styles.optionButton}>
-//               <Text style={styles.optionText}>Library</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity onPress={() => handleOptionPress('Remove')} style={styles.optionButton}>
-//               <Text style={styles.optionText}>Remove</Text>
-//             </TouchableOpacity>
-//             <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-//               <Text style={styles.closeButtonText}>Close</Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//       </Modal>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#f0f0f0',
-//   },
-//   openButton: {
-//     backgroundColor: '#007bff',
-//     padding: 15,
-//     borderRadius: 10,
-//   },
-//   buttonText: {
-//     color: '#fff',
-//     fontSize: 18,
-//   },
-//   modalOverlay: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: 'rgba(0,0,0,0.5)',
-//   },
-//   modalContainer: {
-//     width: '80%',
-//     backgroundColor: '#fff',
-//     borderRadius: 10,
-//     padding: 20,
-//     alignItems: 'center',
-//   },
-//   optionButton: {
-//     padding: 15,
-//     width: '100%',
-//     alignItems: 'center',
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#ddd',
-//   },
-//   optionText: {
-//     fontSize: 18,
-//   },
-//   closeButton: {
-//     marginTop: 20,
-//     backgroundColor: '#ff4d4d',
-//     padding: 10,
-//     borderRadius: 10,
-//   },
-//   closeButtonText: {
-//     color: '#fff',
-//     fontSize: 16,
-//   },
-// });
-
-// export default OptionsModal;
+export default ModalScreen;
