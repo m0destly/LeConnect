@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ImageBackground, Alert } from 'react-native';
+import { View, Text, StyleSheet, Button, ImageBackground, Alert, FlatList } from 'react-native';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 
@@ -15,6 +15,7 @@ const EventPage = ({ route, navigation }) => {
 
   const joinEvent = async () => {
     try {
+      await displayProfile();
       Participants.includes(user.id) ? Participants : Participants.push(user.id);
       await firebase.firestore()
       .collection("events")
@@ -30,6 +31,30 @@ const EventPage = ({ route, navigation }) => {
       console.log(error.message);
     }
   };
+
+  const displayProfile = async () => {
+    // [userProfile1, userProfile2, userProfile2]
+    const participantsData = new Array<any>();
+    Participants.forEach((participantID: String) => {
+      const snapshot = firebase.firestore()
+        .collection("users")
+        .where('User', '==', participantID)
+        .get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            participantsData.push(doc.data());
+            console.log("Each item: ", doc.data());
+          })
+        });
+    });
+    console.log("Participants DATA: " + participantsData);
+  }
+
+  const toProfile = async (userID: String) => {
+    navigation.navigate('ProfileScreen', {
+      userID: userID,
+    })
+  }
 
   return (
     <ImageBackground
@@ -56,6 +81,14 @@ const EventPage = ({ route, navigation }) => {
               disabled={isCreator}
             />
           </View>
+        </View>
+        <View>
+          {/* flatlist for all the participants in the event */}
+          <Text>Participants</Text>
+          {/* <FlatList
+            data={Participants}
+            renderItem={}
+          /> */}
         </View>
       </View>
     </ImageBackground>
