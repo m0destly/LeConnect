@@ -302,7 +302,7 @@ const NewProfileScreen = ({ navigation }) => {
           placeholder="Write a short bio"
         />
 
-        <Text style={styles.label}>Picture: (Optional)</Text>
+        <Text style={styles.label}>Picture: (Compulsory)</Text>
         <Image
           resizeMode="cover"
           style={styles.image}

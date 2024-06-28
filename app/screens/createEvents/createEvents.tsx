@@ -11,7 +11,7 @@ const CreateEventsScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
   const [title, setTitle] = useState('');
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState([]);
   const [categories, setCategories] = useState([
     { label: 'Study', value: 'study' },
     { label: 'Eat', value: 'eat' },
@@ -49,10 +49,19 @@ const CreateEventsScreen = ({ navigation }) => {
     }
   };
 
+  const sendToBackEnd = async () => {
+    if (title.trim().length == 0 ||
+        value.length == 0) {
+          Alert.alert("Error", "Title and Category cannot be empty");
+    } else {
+      createEvents();
+    }
+  };
+
   const resetEvents = () => {
     setTitle('');
     setOpen(false);
-    setValue(null);
+    setValue([]);
     setCategories([
       { label: 'Study', value: 'study' },
       { label: 'Eat', value: 'eat' },
@@ -84,7 +93,7 @@ const CreateEventsScreen = ({ navigation }) => {
           <DropDownPicker
             style={styles.dropdown}
             multiple={true}
-            min={0}
+            min={1}
             max={5}
             open={open}
             value={value}
@@ -125,7 +134,7 @@ const CreateEventsScreen = ({ navigation }) => {
           />
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={createEvents}>
+        <TouchableOpacity style={styles.submitButton} onPress={sendToBackEnd}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </View>
