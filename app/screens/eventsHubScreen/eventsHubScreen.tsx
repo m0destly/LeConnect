@@ -12,10 +12,7 @@ const EventsHubScreen = ({ navigation }) => {
   const [eachEvent, setEachEvent] = useState([]);
   const [joinedEvent, setJoinedEvent] = useState([]);
 
-  const handlePress = () => {
-    navigation.navigate('LoginScreen');
-  };
-
+  // a function that navigated to the Event Page
   const toEvent = (item: EventData) => {
     navigation.navigate('EventPage', {
       Title: item.Title,
@@ -28,6 +25,7 @@ const EventsHubScreen = ({ navigation }) => {
     });
   };
 
+  // Renders each item in the flatlist
   const renderEvent = ({item}) => {
     return (
       <Event
