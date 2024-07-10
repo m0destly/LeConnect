@@ -1,7 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, TextInput, KeyboardAvoidingView, ScrollView } from 'react-native';
 import firebase from 'firebase/compat';
 import UserContext from '@/app/userContext';
+import { Button } from 'react-native-elements';
+
 
 const ProfileScreen = ({ navigation }) => {
 
@@ -9,6 +11,11 @@ const ProfileScreen = ({ navigation }) => {
   const [userData, getUserData] = useState<userProfile>();
   const [isEditing, setIsEditing] = useState(false);
   const [docID, getDocID] = useState('');
+  const currUser = firebase.auth().currentUser;
+  const [isPressed, setIsPressed] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPW, setConfirmPW] = useState('');
+  const [message, setMessaage] = useState('');
 
   type userProfile = {
     Name: String;
@@ -51,47 +58,109 @@ const ProfileScreen = ({ navigation }) => {
       DocID: docID,
     });
   };
+
+  const handleChangePassword = () => {
+    if (newPassword === confirmPW && newPassword !== '' && confirmPW !== '') {
+      currUser?.updatePassword(newPassword)
+        .then(() => {
+          setMessaage('');
+          setConfirmPW('');
+          setNewPassword('');
+          setIsPressed(false);
+          Alert.alert('Update successful', 'Your password has been changed');
+        })
+        .catch((error) => {
+          setMessaage(error.message);
+        })
+
+    } else {
+      setMessaage('Passwords do not match / Cannot be empty');
+    }
+  }
   
   useEffect(() => {
     retrieveProfile();
   }, []);
   
   return (
-    <View style={styles.container}>
-      <View style={styles.profileContainer}>
-        <View style={styles.profilePic}>
-          <View style={styles.profileDetails}>
-            <View style={styles.profileField}>
-              <Text style={styles.label}>Name:</Text>
-              <Text style={styles.text}>{userData?.Name}</Text>
+    
+      <ScrollView contentContainerStyle={styles.scrollViewContents}>
+        <View style={styles.container}>
+        <View style={styles.profileContainer}>
+          <View style={styles.profilePic}>
+            <View style={styles.profileDetails}>
+              <View style={styles.profileField}>
+                <Text style={styles.label}>Name:</Text>
+                <Text style={styles.text}>{userData?.Name}</Text>
+              </View>
+              <View style={styles.profileField}>
+                <Text style={styles.label}>Contact:</Text>
+                <Text style={styles.text}>{userData?.Contact}</Text>
+              </View>
+              <View style={styles.profileField}>
+                <Text style={styles.label}>Gender:</Text>
+                <Text style={styles.text}>{userData?.Gender}</Text>
+              </View>
+              <View style={styles.profileField}>
+                <Text style={styles.label}>Bio:</Text>
+                <Text style={styles.text}>{userData?.Bio}</Text>
+              </View>
             </View>
-            <View style={styles.profileField}>
-              <Text style={styles.label}>Contact:</Text>
-              <Text style={styles.text}>{userData?.Contact}</Text>
-            </View>
-            <View style={styles.profileField}>
-              <Text style={styles.label}>Gender:</Text>
-              <Text style={styles.text}>{userData?.Gender}</Text>
-            </View>
-            <View style={styles.profileField}>
-              <Text style={styles.label}>Bio:</Text>
-              <Text style={styles.text}>{userData?.Bio}</Text>
-            </View>
+            <Image
+              source={{ uri: userData?.Pic }}
+              style={styles.image}
+            />
           </View>
-          <Image
-            source={{ uri: userData?.Pic }}
-            style={styles.image}
-          />
+          <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
+            <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit'}</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
-          <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit'}</Text>
-        </TouchableOpacity>
+        <Button
+          title='Change Password'
+          onPress={() => setIsPressed(!isPressed)}
+          buttonStyle={styles.changePassword}
+        />
+        <View style={styles.passwordContainer}>
+          {isPressed && (
+            <View>
+              <TextInput
+                style={styles.passwordInput}
+                value={newPassword}
+                placeholder="New Password"
+                onChangeText={setNewPassword}
+                secureTextEntry={true}
+              />
+              <TextInput
+                style={styles.passwordInput}
+                value={confirmPW}
+                placeholder="Confirm Password"
+                onChangeText={setConfirmPW}
+                secureTextEntry={true}
+                
+              />
+              <Button
+                title='Confirm'
+                onPress={handleChangePassword}
+                buttonStyle={styles.confirm}
+              />
+            </View>
+          )}
+          {message && (
+            <View>
+              <Text> {message} </Text>
+            </View>
+          )}
+        </View>
       </View>
-    </View>
+      </ScrollView>
+
   );
 };
 
 const styles = StyleSheet.create({
+  scrollViewContents: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -147,6 +216,29 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     borderRadius: 75,
   },
+  passwordContainer: {
+    padding: 20,
+  },
+  changePassword: {
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 50,
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: 30,
+  },
+  confirm: {
+    backgroundColor: 'green',
+    paddingVertical: 10,
+    paddingHorizontal: 50,
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  passwordInput: {
+    fontSize: 20,
+    padding: 5,
+  }
 });
 
 export default ProfileScreen;

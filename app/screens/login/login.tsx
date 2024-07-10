@@ -72,6 +72,10 @@ const LoginScreen = ({ navigation }) => {
     navigation.navigate('Register');
   };
 
+  const forgetPassword = () => {
+    navigation.navigate('ResetPassword');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>LeConnect</Text>
@@ -104,6 +108,14 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.signUpText2}>Sign up here!</Text>
         </Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.signUpBtn} onPress={forgetPassword}>
+        <Text style={styles.signUpText1}> 
+          Forgot password?{' '} 
+          <Text style={styles.signUpText2}>Reset here!</Text>
+        </Text>
+      </TouchableOpacity>
+
     </View>
   );
 };

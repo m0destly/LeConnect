@@ -27,11 +27,6 @@ const EventsHubScreen = ({ navigation }) => {
     });
   };
 
-  // a function that helps navigate to the history page
-  const toHistory = () => {
-    navigation.navigate('History');
-  }
-
   // Renders each item in the flatlist
   const renderEvent = ({item}) => {
     return (
@@ -48,7 +43,7 @@ const EventsHubScreen = ({ navigation }) => {
         .firestore()
         .collection('events')
         .where('Creator', "==", user.id)
-        .where('Time', '>=', new Date())
+        .where('Time', '<', new Date())
         .orderBy('Time', 'asc')
         .onSnapshot(querySnapshot => {
           const myEventsDatabase = [];
@@ -68,7 +63,7 @@ const EventsHubScreen = ({ navigation }) => {
         .firestore()
         .collection('events')
         .where('Participants', "array-contains", user.id)
-        .where('Time', '>=', new Date())
+        .where('Time', '<', new Date())
         .orderBy('Time', 'asc')
         .onSnapshot(querySnapshot => {
           const joinedEventsDatabase = [];
@@ -89,9 +84,6 @@ const EventsHubScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={toHistory} style={styles.toHistoryButton}>
-          <Icon name="logout" type="material" size={24} color="black"/>
-      </TouchableOpacity>
       <Text style={styles.title}>Events Created By Me</Text>
       <View style={styles.flatListContainer}>
         <FlatList
@@ -117,10 +109,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-  },
-  toHistoryButton: {
-    position: 'relative',
-    left: 0,
   },
   title: {
     fontSize: 24,

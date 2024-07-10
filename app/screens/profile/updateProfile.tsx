@@ -32,7 +32,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
       });
       Alert.alert("Success", "Your details have been updated!");
       navigation.pop();
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert("Error", "Failed to update details: " + error.message);
     }
   };

@@ -8,24 +8,57 @@ const EventPage = ({ route, navigation }) => {
   const { user } = useContext(UserContext);
   const { Title, Category, Time, id, Description, Creator, Participants } = route.params;
   const [isCreator, setIsCreator] = useState(false);
+  const [index, setIndex] = useState(-1);
+  const [canJoin, setCanJoin] = useState(false);
 
   useEffect(() => {
-    Creator == user.id ? setIsCreator(true) : setIsCreator(false);
-  }, []); 
+    Creator === user.id ? setIsCreator(true) : setIsCreator(false);
+    // query if participant has joined
+    // if not, do nth
+    // if joined, setIsJoined(true)
+    // if isJoined true, button becomes unjoin
+    // unjoin => setIsJoined(false)
+    const initial = Participants.indexOf(user.id);
+    if (initial === -1) {
+      setCanJoin(true);
+    }
+    setIndex(Participants.indexOf(user.id));
+  }, []);
 
   const joinEvent = async () => {
     try {
       await displayProfile();
-      Participants.includes(user.id) ? Participants : Participants.push(user.id);
+      Participants.push(user.id);
       await firebase.firestore()
-      .collection("events")
-      .doc(id)
-      .update({
-        Participants: Participants,
-      })
-      .then(() => {
-        Alert.alert('Successfully joined event!');
-      });
+        .collection("events")
+        .doc(id)
+        .update({
+          Participants: Participants,
+        })
+        .then(() => {
+          Alert.alert('Successfully joined event!');
+        });
+      setCanJoin(false);
+    } catch (error: any) {
+      Alert.alert('error');
+      console.log(error.message);
+    }
+  };
+
+  const unjoinEvent = async () => {
+    try {
+      await displayProfile();
+      Participants.splice(index, 1);
+      await firebase.firestore()
+        .collection("events")
+        .doc(id)
+        .update({
+          Participants: Participants,
+        })
+        .then(() => {
+          Alert.alert('Successfully left event!');
+        });
+      setCanJoin(true);
     } catch (error: any) {
       Alert.alert('error');
       console.log(error.message);
@@ -76,8 +109,8 @@ const EventPage = ({ route, navigation }) => {
           
           <View style={styles.footer}>
             <Button
-              title='Join Event!'
-              onPress={joinEvent}
+              title={canJoin ? 'Join Event!' : 'Leave Event!'}
+              onPress={canJoin ? joinEvent : unjoinEvent}
               disabled={isCreator}
             />
           </View>

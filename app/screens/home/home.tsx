@@ -16,7 +16,8 @@ const HomeScreen = ({ navigation }) => {
       try {
         await firebase
           .firestore()
-          .collection('events')
+          .collection('events') 
+          .where('Time', '>=', new Date())
           .orderBy(selectedFilter, 'asc')
           .onSnapshot(querySnapshot => {
             const eventsFromDatabase = [];
