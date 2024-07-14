@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Orbital1",
-    "slug": "Orbital1",
+    "name": "LeConnect",
+    "slug": "leconnect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -13,15 +13,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.ianthegoat.Orbital1"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.ianthegoat.Orbital1"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -39,15 +37,15 @@
         "origin": false
       },
       "eas": {
-        "projectId": "29f63c21-6e8b-4f1d-be41-e44a077fdf7d"
+        "projectId": "560b3be0-c28c-4d81-8765-e0b17ae89767"
       }
     },
+    "owner": "leconnect",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/29f63c21-6e8b-4f1d-be41-e44a077fdf7d"
-    },
-    "owner": "ianthegoat"
+      "url": "https://u.expo.dev/560b3be0-c28c-4d81-8765-e0b17ae89767"
+    }
   }
 }
