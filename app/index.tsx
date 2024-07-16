@@ -10,6 +10,7 @@ import NewProfileScreen from './screens/profile/newProfile';
 import HistoryScreen from './screens/eventsHubScreen/history';
 import { UserProvider } from './userContext';
 import ResetPasswordScreen from './screens/login/resetPassword';
+import GoogleMapsScreen from './screens/gmaps/gmapsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +18,8 @@ const MyStack = () => {
   return (
     <UserProvider>
       <NavigationContainer independent={true}>
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="GoogleMaps">
+          <Stack.Screen name="GoogleMaps" component={GoogleMapsScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
           <Stack.Screen name="LeConnect" component={MainTabNavigator} />
