@@ -20,16 +20,29 @@ const UpdateProfileScreen = ({ route, navigation }) => {
 
   const updateProfile = async () => {
     try {
-      const downloadURL = await uploadFileToFirebase(image, fileName);
-      await firebase.firestore().collection('users').doc(DocID).update({
-        Name: name,
-        Age: age,
-        Gender: gender,
-        Contact: contact,
-        Bio: bio,
-        Pic: downloadURL,
-        PicName: fileName,
-      });
+      if (image !== Pic) {
+        const downloadURL = await uploadFileToFirebase(image, fileName);
+        await firebase.firestore().collection('users').doc(DocID).update({
+          Name: name,
+          Age: age,
+          Gender: gender,
+          Contact: contact,
+          Bio: bio,
+          Pic: downloadURL,
+          PicName: fileName,
+        });
+      } else {
+        await firebase.firestore().collection('users').doc(DocID).update({
+          Name: name,
+          Age: age,
+          Gender: gender,
+          Contact: contact,
+          Bio: bio,
+          Pic: Pic,
+          PicName: fileName,
+        });
+      }
+      
       Alert.alert("Success", "Your details have been updated!");
       navigation.pop();
     } catch (error: any) {

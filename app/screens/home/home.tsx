@@ -51,6 +51,7 @@ const HomeScreen = ({ navigation }) => {
       Description: item.Description,
       Creator: item.Creator,
       Participants: item.Participants,
+      Location: item.Location,
     });
   };
 

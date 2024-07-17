@@ -1,36 +1,19 @@
-// import React from "react";
-// import MapView from 'react-native-maps';
-// import {StyleSheet, View} from 'react-native';
-
-// const GoogleMapsScreen = () => {
-//     return (
-//         <View style={{flex: 1}}>
-//             <MapView 
-//                 style={StyleSheet.absoluteFill} 
-//                 showsUserLocation={true}
-//                 showsMyLocationButton={true}
-//             />
-//         </View>
-//     )
-// }
-
-// export default GoogleMapsScreen;
-
 import React, { useState } from 'react';
 import { Text, Button, View, Linking, Alert, TextInput, StyleSheet } from 'react-native';
 import { Platform } from 'react-native';
 
-const GoogleMapsScreen = () => {
+const MapsScreen = () => {
     const [dirty, setDirty] = useState('');
     const [clean, setClean] = useState('');
-
+    
+    // event creator
     const openMaps = () => {
         const url = Platform.OS === 'android'
             ? 'https://maps.google.com'
             : 'http://maps.apple.com?daddr=';
         Linking.openURL(url);
     }
-
+    // user
     const openDirections = () => {
         const url = Platform.OS === 'android' 
             ? `https://www.google.com/maps/dir/?api=1&destination=${clean}` 
@@ -46,7 +29,7 @@ const GoogleMapsScreen = () => {
             })
             .catch((err) => console.error('An error occurred', err));
     };
-
+    // event creator
     const setLocation = () => {
         if (!dirty) {
             setClean('');
@@ -94,4 +77,22 @@ const styles = StyleSheet.create({
     },
 });
 
-export default GoogleMapsScreen;
+export default MapsScreen;
+
+// import React from "react";
+// import MapView from 'react-native-maps';
+// import {StyleSheet, View} from 'react-native';
+
+// const MapsScreen = () => {
+//     return (
+//         <View style={{flex: 1}}>
+//             <MapView 
+//                 style={StyleSheet.absoluteFill} 
+//                 showsUserLocation={true}
+//                 showsMyLocationButton={true}
+//             />
+//         </View>
+//     )
+// }
+
+// export default MapsScreen;
