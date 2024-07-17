@@ -1,15 +1,16 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ImageBackground, Alert, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Button, ImageBackground, Alert, ScrollView, Platform, Linking } from 'react-native';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 
 const EventPage = ({ route, navigation }) => {
-  
+
   const { user } = useContext(UserContext);
-  const { Title, Category, Time, id, Description, Creator, Participants } = route.params;
+  const { Title, Category, Time, id, Description, Creator, Participants, Location } = route.params;
   const [isCreator, setIsCreator] = useState(false);
   const [index, setIndex] = useState(-1);
   const [canJoin, setCanJoin] = useState(false);
+  const [clean, setClean] = useState('');
 
   useEffect(() => {
     Creator === user.id ? setIsCreator(true) : setIsCreator(false);
@@ -23,7 +24,32 @@ const EventPage = ({ route, navigation }) => {
       setCanJoin(true);
     }
     setIndex(Participants.indexOf(user.id));
+    cleanLocation();
   }, []);
+
+  const cleanLocation = () => {
+    if (Platform.OS === 'android') {
+      setClean(Location.replaceAll(' ', '+').replaceAll(',', '%2C').replaceAll('|', '%7C'));
+    } else {
+      setClean(Location.replaceAll(' ', '+'));
+    }
+  };
+
+  const openDirections = () => {
+    const url = Platform.OS === 'android'
+      ? `https://www.google.com/maps/dir/?api=1&destination=${clean}`
+      : `http://maps.apple.com/?daddr=${clean}`;
+    console.log(clean);
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert('Error', "Can't handle url: " + url);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+  };
 
   const joinEvent = async () => {
     try {
@@ -95,35 +121,48 @@ const EventPage = ({ route, navigation }) => {
       style={styles.background}
       resizeMode='cover'
     >
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          <Text style={styles.title}>{Title}</Text>
-        <View style={{flexDirection: 'row'}}>
-        <Text style={styles.timeHeader}>Time: </Text>
-          <Text style={styles.time}>{Time}</Text>
-        </View>
-        <Text style={styles.descriptionTitle}>Description</Text>
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionText}>{Description}</Text>
+      <ScrollView>
+        <View style={styles.overlay}>
+          <View style={styles.container}>
+            <Text style={styles.title}>{Title}</Text>
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={styles.timeHeader}>Time: </Text>
+              <Text style={styles.time}>{Time}</Text>
+            </View>
+
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={styles.timeHeader}>Location: </Text>
+              <Text style={styles.time}>{Location}</Text>
+              <Button
+                title='Get Directions'
+                onPress={openDirections}
+              />
+            </View>
+
+
+            <Text style={styles.descriptionTitle}>Description</Text>
+            <View style={styles.descriptionContainer}>
+              <Text style={styles.descriptionText}>{Description}</Text>
+            </View>
+
+            <View style={styles.footer}>
+              <Button
+                title={canJoin ? 'Join Event!' : 'Leave Event!'}
+                onPress={canJoin ? joinEvent : unjoinEvent}
+                disabled={isCreator}
+              />
+            </View>
           </View>
-          
-          <View style={styles.footer}>
-            <Button
-              title={canJoin ? 'Join Event!' : 'Leave Event!'}
-              onPress={canJoin ? joinEvent : unjoinEvent}
-              disabled={isCreator}
-            />
-          </View>
-        </View>
-        <View>
-          {/* flatlist for all the participants in the event */}
-          <Text>Participants</Text>
-          {/* <FlatList
+          <View>
+            {/* flatlist for all the participants in the event */}
+            <Text>Participants</Text>
+            {/* <FlatList
             data={Participants}
             renderItem={}
           /> */}
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -140,15 +179,15 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'flex-start', 
+    justifyContent: 'flex-start',
     paddingHorizontal: 20,
     paddingTop: 40,
   },
   title: {
-    fontSize: 28, 
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: 'white', 
+    color: 'white',
   },
   timeHeader: {
     fontSize: 18,
@@ -164,9 +203,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 10,
   },
   descriptionContainer: {
-    backgroundColor: 'rgba(0,0,0,0.7)', 
-    padding: 20, 
-    borderRadius: 10, 
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    padding: 20,
+    borderRadius: 10,
     marginBottom: 20,
     height: 350,
   },

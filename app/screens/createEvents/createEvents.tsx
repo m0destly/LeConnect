@@ -1,6 +1,8 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput, 
-  TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import {
+  View, Text, StyleSheet, TextInput,
+  TouchableOpacity, ScrollView, Alert, Linking, Platform, LogBox
+} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import firebase from 'firebase/compat/app';
@@ -18,10 +20,14 @@ const CreateEventsScreen = ({ navigation }) => {
     { label: 'Sports', value: 'sports' },
     { label: 'Others', value: 'others' },
   ]);
-
   const [description, setDescription] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [location, setLocation] = useState('');
+
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, []);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -40,19 +46,20 @@ const CreateEventsScreen = ({ navigation }) => {
         Time: selectedDate,
         Creator: user.id,
         Participants: new Array<String>(),
+        Location: location
       });
       Alert.alert("Success", "Event created successfully!");
       resetEvents();
       //navigation.goBack(); // Navigate back after successful creation
-    } catch (error : any) {
+    } catch (error: any) {
       Alert.alert("Error", "Failed to create event: " + error.message);
     }
   };
 
   const sendToBackEnd = async () => {
     if (title.trim().length == 0 ||
-        value.length == 0) {
-          Alert.alert("Error", "Title and Category cannot be empty");
+      value.length == 0 || location.trim().length == 0) {
+      Alert.alert("Error", "Do not leave any fields empty");
     } else {
       createEvents();
     }
@@ -71,7 +78,15 @@ const CreateEventsScreen = ({ navigation }) => {
     setDescription('');
     setSelectedDate(new Date());
     setDatePickerVisibility(false);
+    setLocation('');
   };
+
+  const openMaps = () => {
+    const url = Platform.OS === 'android'
+      ? 'https://maps.google.com'
+      : 'http://maps.apple.com?daddr=';
+    Linking.openURL(url);
+  }
 
   return (
     <ScrollView>
@@ -88,7 +103,7 @@ const CreateEventsScreen = ({ navigation }) => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={styles.categoryContainer}>
           <Text style={styles.label}>Categories</Text>
           <DropDownPicker
             style={styles.dropdown}
@@ -102,8 +117,7 @@ const CreateEventsScreen = ({ navigation }) => {
             setValue={setValue}
             setItems={setCategories}
             placeholder={'Select categories...'}
-            mode="BADGE"
-            badgeDotColors={["#34495E", "#E74C3C", "#3498DB", "#2ECC71", "#F1C40F"]}
+            mode="SIMPLE"
           />
         </View>
 
@@ -115,10 +129,26 @@ const CreateEventsScreen = ({ navigation }) => {
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="datetime"
-            onConfirm={setSelectedDate}
+            onConfirm={(date) => {
+              setSelectedDate(date);
+              hideDatePicker();
+            }}
             onCancel={hideDatePicker}
           />
           <Text style={styles.selectedDateText}>Selected: {selectedDate.toString().substring(0, 21)}</Text>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Location</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setLocation}
+            value={location}
+            placeholder='Paste location here...'
+          />
+          <TouchableOpacity style={styles.dateButton} onPress={openMaps}>
+            <Text style={styles.dateButtonText}>Open Maps</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.inputContainer}>
@@ -150,6 +180,10 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 20,
+  },
+  categoryContainer: {
+    marginBottom: 20,
+    zIndex: 1000,
   },
   label: {
     fontSize: 16,

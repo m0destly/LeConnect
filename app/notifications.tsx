@@ -7,12 +7,12 @@ import Constants from 'expo-constants';
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
+        shouldPlaySound: true,
         shouldSetBadge: false,
     }),
 });
 
-export default function pushNotifications() {
+export default function PushNotifications() {
     const [expoPushToken, setExpoPushToken] = useState('');
     const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
     const [notification, setNotification] = useState<Notifications.Notification | undefined>(
@@ -74,11 +74,14 @@ export default function pushNotifications() {
 async function schedulePushNotification() {
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: "You've got mail! 📬",
-            body: 'Here is the notification body',
+            title: `name is starting soon`,
+            sound: 'shopee.mp3',
+            body: `Be at location by time, don't be late!`,
             data: { data: 'goes here', test: { test1: 'more data' } },
         },
-        trigger: { seconds: 2 },
+        trigger: { 
+            seconds: 5,
+        },
     });
 }
 

@@ -10,6 +10,7 @@ export interface EventData {
   id: String;
   Creator: String;
   Participants: String[];
+  Location: String;
 };
 
 export const Event = ({item, onPress}) => {
