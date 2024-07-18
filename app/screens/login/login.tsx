@@ -7,7 +7,7 @@ import firebase from 'firebase/compat';
 
 const LoginScreen = ({ navigation }) => {
 
-  const { user, saveUser } = useContext(UserContext);
+  const { user, saveUser, clearUser } = useContext(UserContext);
   
   const usernameRef = useRef();
   const passwordRef = useRef();
@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }) => {
         // to get the document
         const documentSnapshot = await firebase.firestore()
           .collection('users')
-          .where('User', '==', user.id)
+          .where('User', '==', currUser.uid)
           .get();
         if (!documentSnapshot.empty) {
           navigation.navigate('LeConnect');
@@ -42,6 +42,7 @@ const LoginScreen = ({ navigation }) => {
         }
       }
     } catch (error: any) {
+      clearUser();
       console.error('Sign-in Error:', error);
       if (error.code === 'auth/invalid-email') {
         Alert.alert('Error', `Please enter a valid email.`);
