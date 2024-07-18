@@ -112,8 +112,7 @@ async function registerForPushNotificationsAsync() {
         // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
         // EAS projectId is used here.
         try {
-            const projectId =
-                Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+            const projectId = "560b3be0-c28c-4d81-8765-e0b17ae89767";
             if (!projectId) {
                 throw new Error('Project ID not found');
             }

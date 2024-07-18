@@ -7,10 +7,9 @@ import { EventData, Event } from '@/app/types.d';
 
 const HomeScreen = ({ navigation }) => {
   
-  const { user, clearUser } = useContext(UserContext);
   const [eachData, setEachData] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('Time');
-  
+
   useEffect(() => {
     const loadEvents = async () => {
       try {

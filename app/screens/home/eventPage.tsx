@@ -11,6 +11,7 @@ const EventPage = ({ route, navigation }) => {
   const [index, setIndex] = useState(-1);
   const [canJoin, setCanJoin] = useState(false);
   const [clean, setClean] = useState('');
+  const [participants, setParticipants] = useState(new Array<any>());
 
   useEffect(() => {
     Creator === user.id ? setIsCreator(true) : setIsCreator(false);
@@ -25,6 +26,8 @@ const EventPage = ({ route, navigation }) => {
     }
     setIndex(Participants.indexOf(user.id));
     cleanLocation();
+    displayProfile();
+    console.log(participants);
   }, []);
 
   const cleanLocation = () => {
@@ -53,7 +56,6 @@ const EventPage = ({ route, navigation }) => {
 
   const joinEvent = async () => {
     try {
-      await displayProfile();
       Participants.push(user.id);
       await firebase.firestore()
         .collection("events")
@@ -73,7 +75,6 @@ const EventPage = ({ route, navigation }) => {
 
   const unjoinEvent = async () => {
     try {
-      await displayProfile();
       Participants.splice(index, 1);
       await firebase.firestore()
         .collection("events")
@@ -94,7 +95,7 @@ const EventPage = ({ route, navigation }) => {
   const displayProfile = async () => {
     // [userProfile1, userProfile2, userProfile2]
     const participantsData = new Array<any>();
-    Participants.forEach((participantID: String) => {
+    await Participants.forEach((participantID: String) => {
       const snapshot = firebase.firestore()
         .collection("users")
         .where('User', '==', participantID)
@@ -106,7 +107,8 @@ const EventPage = ({ route, navigation }) => {
           })
         });
     });
-    console.log("Participants DATA: " + participantsData);
+    setParticipants(participantsData);
+    //console.log("Participants DATA: " + participantsData);
   }
 
   const toProfile = async (userID: String) => {
