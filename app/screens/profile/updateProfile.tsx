@@ -121,7 +121,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
 
         <Text style={styles.label}>Bio:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.bioInput}
           value={bio}
           onChangeText={setBio}
           multiline={true}
@@ -181,6 +181,15 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
+    borderColor: '#007BFF',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+  },
+  bioInput: {
+    height: 80,
     borderColor: '#007BFF',
     borderWidth: 1,
     borderRadius: 10,

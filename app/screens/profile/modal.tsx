@@ -5,30 +5,36 @@ import * as ImagePicker from 'expo-image-picker';
 
 const ModalScreen = ({ visible, onClose, setImage, setFileName }) => {
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setFileName(result.assets[0].fileName);
+  const choosePicture = async () => {
+    const status = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status) {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        quality: 1,
+      });
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        setFileName(result.assets[0].fileName);
+        onClose();
+      }
     }
-    onClose();
   };
 
   const takePicture = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setFileName(result.assets[0].fileName);
+    const status = await ImagePicker.requestCameraPermissionsAsync();
+    if (status) {
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        quality: 1,
+      });
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        setFileName(result.assets[0].fileName);
+        onClose();
+      }
     }
-    onClose();
   };
 
   return (
@@ -36,20 +42,19 @@ const ModalScreen = ({ visible, onClose, setImage, setFileName }) => {
       animationType="slide"
       transparent={true}
       visible={visible}
-      onRequestClose={onClose}
     >
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Select a mode</Text>
-          
+          <Text style={styles.modalTitle}>Select Mode</Text>
+
           <TouchableOpacity style={styles.actionButton} onPress={takePicture}>
             <MaterialCommunityIcons name="camera" size={40} color="white" />
             <Text style={styles.buttonText}>Take Picture</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton} onPress={pickImage}>
+          <TouchableOpacity style={styles.actionButton} onPress={choosePicture}>
             <MaterialCommunityIcons name="image" size={40} color="white" />
-            <Text style={styles.buttonText}>Pick Image</Text>
+            <Text style={styles.buttonText}>Choose Picture</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>

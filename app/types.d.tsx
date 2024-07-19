@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import React from "react";
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
 export interface EventData {
   Title: String;
@@ -31,6 +31,27 @@ export const Event = ({item, onPress}) => {
   );
 };
 
+export interface EventProfileData {
+  Name: String;
+  Pic: String;
+};
+
+export const EventProfile = ({item, onPress}) => {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[eventProfileStyles.profileContainer]}>
+      <Image
+        source={{uri: item.Pic}}
+        style={eventProfileStyles.profilePic}>
+      </Image>
+      <Text style={eventProfileStyles.profileName}>
+        {item.Name}
+      </Text>
+    </TouchableOpacity>
+  )
+}
+
 const eventStyles = StyleSheet.create({
     eventContainer: {
         padding: 16,
@@ -60,3 +81,25 @@ const eventStyles = StyleSheet.create({
         color: '#999',
     },
 });
+
+const eventProfileStyles = StyleSheet.create({
+  profileContainer: {
+    padding: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: 'grey',
+    flexDirection: 'row',
+  },
+  profileName: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginLeft: 10,
+    alignSelf: 'center',
+  }, 
+  profilePic: {
+    width: 25,
+    height: 25,
+    borderRadius: 10,
+    alignSelf: 'center',
+  }
+})

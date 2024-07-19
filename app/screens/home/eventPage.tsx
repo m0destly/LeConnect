@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ImageBackground, Alert, ScrollView, Platform, Linking } from 'react-native';
+import { View, Text, StyleSheet, Button, ImageBackground, Alert, ScrollView, FlatList, Platform, Linking, LogBox } from 'react-native';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
+import { EventProfile, EventProfileData } from '@/app/types.d';
 
 const EventPage = ({ route, navigation }) => {
 
@@ -20,6 +21,7 @@ const EventPage = ({ route, navigation }) => {
     // if joined, setIsJoined(true)
     // if isJoined true, button becomes unjoin
     // unjoin => setIsJoined(false)
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     const initial = Participants.indexOf(user.id);
     if (initial === -1) {
       setCanJoin(true);
@@ -27,8 +29,7 @@ const EventPage = ({ route, navigation }) => {
     setIndex(Participants.indexOf(user.id));
     cleanLocation();
     displayProfile();
-    console.log(participants);
-  }, []);
+  }, [canJoin]);
 
   const cleanLocation = () => {
     if (Platform.OS === 'android') {
@@ -92,24 +93,49 @@ const EventPage = ({ route, navigation }) => {
     }
   };
 
+  // const displayProfile = async () => {
+  //   // [userProfile1, userProfile2, userProfile2]
+  //   const participantsData = new Array<Object>();
+  //   await Participants.forEach((participantID: String) => {
+  //     const snapshot = firebase.firestore()
+  //       .collection("users")
+  //       .where('User', '==', participantID)
+  //       .get()
+  //       .then((snapshot) => {
+  //         snapshot.forEach((doc) => {
+  //           participantsData.push(doc.data());
+  //           console.log("Each item: ", doc.data());
+  //         })
+  //       });
+  //   });
+  //   setParticipants(participantsData);
+  //   console.log("Participants DATA: " + participantsData);
+  // }
+
   const displayProfile = async () => {
-    // [userProfile1, userProfile2, userProfile2]
     const participantsData = new Array<any>();
-    await Participants.forEach((participantID: String) => {
-      const snapshot = firebase.firestore()
+    for (const participantID of Participants) {
+      const snapshot = await firebase.firestore()
         .collection("users")
         .where('User', '==', participantID)
-        .get()
-        .then((snapshot) => {
-          snapshot.forEach((doc) => {
-            participantsData.push(doc.data());
-            console.log("Each item: ", doc.data());
-          })
-        });
-    });
+        .get();
+
+      snapshot.forEach((doc) => {
+        participantsData.push(doc.data());
+        console.log("Each item: ", doc.data());
+      });
+    }
     setParticipants(participantsData);
-    //console.log("Participants DATA: " + participantsData);
   }
+
+  const renderEventProfile = ({item}) => {
+    return (
+      <EventProfile
+        item={item}
+        onPress={() => toProfile(item)}
+      />
+    );
+  };
 
   const toProfile = async (userID: String) => {
     navigation.navigate('ProfileScreen', {
@@ -155,13 +181,13 @@ const EventPage = ({ route, navigation }) => {
               />
             </View>
           </View>
-          <View>
+          <View style={styles.profileContainer}>
             {/* flatlist for all the participants in the event */}
-            <Text>Participants</Text>
-            {/* <FlatList
-            data={Participants}
-            renderItem={}
-          /> */}
+            <Text style={{fontSize: 25, color: 'white'}}>Participants</Text>
+            <FlatList
+            data={participants}
+            renderItem={renderEventProfile}
+          />
           </View>
         </View>
       </ScrollView>
@@ -227,6 +253,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignSelf: 'stretch',
   },
+  profileContainer: {
+    flex: 1,
+  }
 });
 
 export default EventPage;
