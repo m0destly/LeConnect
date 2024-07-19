@@ -74,6 +74,7 @@ const NewProfileScreen = ({ navigation }) => {
         User: user.id,
         Pic: downloadURL,
         PicName: fileName,
+        Friends: new Array<String>()
       }).then(() => {
         console.log("fileName: " + fileName);
         console.log("downloadURL: " + downloadURL);

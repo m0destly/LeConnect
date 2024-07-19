@@ -1,0 +1,220 @@
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Alert, ScrollView, Text, StyleSheet, Image, Button, TouchableOpacity, TextInput } from 'react-native';
+import UserContext from '@/app/userContext';
+import firebase from 'firebase/compat';
+
+const DisplayProfileScreen = ({ navigation, route }) => {
+    const { user } = useContext(UserContext);
+    const { Name, Age, Gender, Contact, Bio, User, Pic, PicName } = route.params;
+    const [friendMessage, setFriendMessage] = useState('Add Friend');
+    const [disable, setDisable] = useState(false);
+    
+    useEffect(() => {
+        const checkFriendsAndDuplicates = async () => {
+            try {
+                const friendsSnapshot = await firebase.firestore()
+                    .collection('users')
+                    .where('User', '==', user.id)
+                    .where('Friends', 'array-contains', User)
+                    .get();
+                
+                const duplicateSnapshot = await firebase.firestore()
+                    .collection('requests')
+                    .where('Sender', '==', user.id)
+                    .where('Receiver', '==', User)
+                    .get();
+    
+                if (!friendsSnapshot.empty) {
+                    setFriendMessage('Already friends');
+                    setDisable(true);
+                }
+
+                if (!duplicateSnapshot.empty) {
+                    setFriendMessage('Friend request pending');
+                    setDisable(true);
+                }
+            } catch (error: any) {
+                Alert.alert("Error", error.message);
+            }
+        };
+        
+        checkFriendsAndDuplicates();
+    }, [disable]);
+    
+
+    // create a generic function instead
+    // need to handle delete documents in 'requests' collection 
+    const addFriend = async (sender: String, receiver: String) => {
+        // updates the friend's array of the current logged in user
+        let docID = '';
+        let FriendsArray = new Array<String>();
+        try {
+            // retrieves the friends array for the user currently logged in 
+            const querySnapshot = await firebase.firestore()
+                .collection('users')
+                .where('User', '==', sender)
+                .get();
+
+            querySnapshot.forEach(documentSnapshot => {
+                docID = documentSnapshot.id;
+                FriendsArray = documentSnapshot.data().Friends;
+            })
+
+            // add to friends array
+            FriendsArray.push(receiver);
+
+            // upload the new friends array
+            await firebase.firestore().collection('users').doc(docID).update({
+                Friends: FriendsArray,
+            });
+            // Alert.alert("Success!");
+        } catch (error: any) {
+            Alert.alert("Error", error.message)
+        }
+    };
+
+    // Deletes request from A to B 
+    const deleteRequest = async (sender: String, receiver: String) => {
+        let docID = '';
+        const querySnapshot = await firebase.firestore()
+            .collection('requests')
+            .where('Sender', '==', sender)
+            .where('Receiver', '==', receiver)
+            .get();
+        querySnapshot.forEach(documentSnapshot => {
+            docID = documentSnapshot.id;
+        })
+        await firebase.firestore()
+            .collection('requests')
+            .doc(docID)
+            .delete()
+            .then(() => {
+                console.log("Deleted Successfully");
+            })
+            .catch((error) => {
+                console.log("Error removing document: ", error.message);
+            })
+    }
+
+    // send friend req
+    const sendReq = async (sender: String, receiver: String) => {
+        // have to make sure that the request is not present
+        try {
+            // check if friend request from receiver to sender exists
+            const querySnapshot = await firebase.firestore()
+                .collection('requests')
+                .where('Sender', '==', receiver)
+                .where('Receiver', '==', sender)
+                .get();
+            if (querySnapshot.empty) {
+                // submit friend request
+                await firebase.firestore().collection('requests').add({
+                    Sender: sender,
+                    Receiver: receiver,
+                })
+                setDisable(true);
+                Alert.alert('Friend request sent');
+            } else {
+                // delete friend request, make friends
+                deleteRequest(receiver, sender);
+                addFriend(sender, receiver);
+                addFriend(receiver, sender);
+                setDisable(true);
+                Alert.alert(`You and ${Name} are now friends!`);
+            }
+        } catch (error: any) {
+            Alert.alert(error.message);
+        }
+    }
+
+    return (
+        <ScrollView contentContainerStyle={styles.scrollViewContents}>
+            <View style={styles.container}>
+                <View style={styles.profileContainer}>
+                    <View style={styles.profilePic}>
+                        <View style={styles.profileDetails}>
+                            <View style={styles.profileField}>
+                                <Text style={styles.label}>Name:</Text>
+                                <Text style={styles.text}>{Name}</Text>
+                            </View>
+                            <View style={styles.profileField}>
+                                <Text style={styles.label}>Gender:</Text>
+                                <Text style={styles.text}>{Gender}</Text>
+                            </View>
+                            <View style={styles.profileField}>
+                                <Text style={styles.label}>Age:</Text>
+                                <Text style={styles.text}>{Age}</Text>
+                            </View>
+                            <View style={styles.profileField}>
+                                <Text style={styles.label}>Contact:</Text>
+                                <Text style={styles.text}>{Contact}</Text>
+                            </View>
+                            <View style={styles.profileField}>
+                                <Text style={styles.label}>Bio:</Text>
+                                <Text style={styles.text}>{Bio}</Text>
+                            </View>
+                        </View>
+                        <Image
+                            source={{ uri: Pic }}
+                            style={styles.image}
+                        />
+                    </View>
+                    <Button
+                        title={friendMessage}
+                        onPress={() => sendReq(user.id, User)}
+                        disabled={disable}
+                    />
+                </View>
+            </View>
+        </ScrollView >
+    );
+};
+
+const styles = StyleSheet.create({
+    scrollViewContents: {
+        flexGrow: 1,
+    },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f0f0f0',
+    },
+    profileContainer: {
+        width: '80%',
+        backgroundColor: '#ffffff',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        alignItems: 'center',
+    },
+    profileDetails: {
+        flex: 1,
+    },
+    profilePic: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    profileField: {
+        marginBottom: 10,
+    },
+    label: {
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    text: {
+        fontSize: 16,
+    },
+    image: {
+        width: 150,
+        height: 150,
+        marginLeft: 20,
+        borderRadius: 75,
+    },
+});
+
+export default DisplayProfileScreen;
