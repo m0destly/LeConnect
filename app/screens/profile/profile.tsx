@@ -5,9 +5,9 @@ import UserContext from '@/app/userContext';
 import { Button } from 'react-native-elements';
 
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation, route }) => {
 
-  const { user } = useContext(UserContext);
+  const { user } = route.params;
   const [userData, getUserData] = useState<userProfile>();
   const [isEditing, setIsEditing] = useState(false);
   const [docID, getDocID] = useState('');
@@ -42,7 +42,7 @@ const ProfileScreen = ({ navigation }) => {
           getUserData(profile);
         });
     } catch (error: any) {
-      Alert.alert("Error", "Too Bad" + error.message);
+      Alert.alert("Error", error.message);
     }
   };
 
@@ -94,12 +94,16 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.text}>{userData?.Name}</Text>
               </View>
               <View style={styles.profileField}>
-                <Text style={styles.label}>Contact:</Text>
-                <Text style={styles.text}>{userData?.Contact}</Text>
-              </View>
-              <View style={styles.profileField}>
                 <Text style={styles.label}>Gender:</Text>
                 <Text style={styles.text}>{userData?.Gender}</Text>
+              </View>
+              <View style={styles.profileField}>
+                <Text style={styles.label}>Age:</Text>
+                <Text style={styles.text}>{userData?.Age}</Text>
+              </View>
+              <View style={styles.profileField}>
+                <Text style={styles.label}>Contact:</Text>
+                <Text style={styles.text}>{userData?.Contact}</Text>
               </View>
               <View style={styles.profileField}>
                 <Text style={styles.label}>Bio:</Text>

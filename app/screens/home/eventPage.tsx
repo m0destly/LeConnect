@@ -93,25 +93,6 @@ const EventPage = ({ route, navigation }) => {
     }
   };
 
-  // const displayProfile = async () => {
-  //   // [userProfile1, userProfile2, userProfile2]
-  //   const participantsData = new Array<Object>();
-  //   await Participants.forEach((participantID: String) => {
-  //     const snapshot = firebase.firestore()
-  //       .collection("users")
-  //       .where('User', '==', participantID)
-  //       .get()
-  //       .then((snapshot) => {
-  //         snapshot.forEach((doc) => {
-  //           participantsData.push(doc.data());
-  //           console.log("Each item: ", doc.data());
-  //         })
-  //       });
-  //   });
-  //   setParticipants(participantsData);
-  //   console.log("Participants DATA: " + participantsData);
-  // }
-
   const displayProfile = async () => {
     const participantsData = new Array<any>();
     for (const participantID of Participants) {
@@ -122,7 +103,7 @@ const EventPage = ({ route, navigation }) => {
 
       snapshot.forEach((doc) => {
         participantsData.push(doc.data());
-        console.log("Each item: ", doc.data());
+        // console.log("Each item: ", doc.data());
       });
     }
     setParticipants(participantsData);
@@ -137,9 +118,16 @@ const EventPage = ({ route, navigation }) => {
     );
   };
 
-  const toProfile = async (userID: String) => {
-    navigation.navigate('ProfileScreen', {
-      userID: userID,
+  const toProfile = (item: EventProfileData) => {
+    navigation.navigate('DisplayProfile', {
+      Name: item.Name,
+      Age: item.Age,
+      Gender: item.Gender,
+      Contact: item.Contact,
+      Bio: item.Bio,
+      User: item.User,
+      Pic: item.Pic,
+      PicName: item.PicName,
     })
   }
 
