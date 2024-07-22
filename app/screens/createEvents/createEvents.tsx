@@ -15,10 +15,10 @@ const CreateEventsScreen = ({ navigation }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState([]);
   const [categories, setCategories] = useState([
-    { label: 'Study', value: 'study' },
-    { label: 'Eat', value: 'eat' },
-    { label: 'Sports', value: 'sports' },
-    { label: 'Others', value: 'others' },
+    { label: 'Study', value: 'Study' },
+    { label: 'Eat', value: 'Eat' },
+    { label: 'Sports', value: 'Sports' },
+    { label: 'Others', value: 'Others' },
   ]);
   const [description, setDescription] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -70,10 +70,10 @@ const CreateEventsScreen = ({ navigation }) => {
     setOpen(false);
     setValue([]);
     setCategories([
-      { label: 'Study', value: 'study' },
-      { label: 'Eat', value: 'eat' },
-      { label: 'Sports', value: 'sports' },
-      { label: 'Others', value: 'others' },
+      { label: 'Study', value: 'Study' },
+      { label: 'Eat', value: 'Eat' },
+      { label: 'Sports', value: 'Sports' },
+      { label: 'Others', value: 'Others' },
     ]);
     setDescription('');
     setSelectedDate(new Date());

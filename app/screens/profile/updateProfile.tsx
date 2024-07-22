@@ -4,6 +4,7 @@ import firebase from 'firebase/compat';
 import UserContext from '@/app/userContext';
 import ModalScreen from './modal';
 import { FIREBASE_STORAGE } from '@/FirebaseConfig';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const UpdateProfileScreen = ({ route, navigation }) => {
   const { user } = useContext(UserContext);
@@ -11,12 +12,17 @@ const UpdateProfileScreen = ({ route, navigation }) => {
   
   const [name, setName] = useState(Name);
   const [age, setAge] = useState(Age);
-  const [gender, setGender] = useState(Gender);
   const [contact, setContact] = useState(Contact);
   const [bio, setBio] = useState(Bio);
   const [image, setImage] = useState(Pic);
   const [fileName, setFileName] = useState(PicName);
   const [isVisible, setIsVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(Gender);
+  const [gender, setGender] = useState([
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+  ]);
 
   const updateProfile = async () => {
     try {
@@ -25,7 +31,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
         await firebase.firestore().collection('users').doc(DocID).update({
           Name: name,
           Age: age,
-          Gender: gender,
+          Gender: value,
           Contact: contact,
           Bio: bio,
           Pic: downloadURL,
@@ -35,7 +41,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
         await firebase.firestore().collection('users').doc(DocID).update({
           Name: name,
           Age: age,
-          Gender: gender,
+          Gender: value,
           Contact: contact,
           Bio: bio,
           Pic: Pic,
@@ -104,11 +110,17 @@ const UpdateProfileScreen = ({ route, navigation }) => {
         />
 
         <Text style={styles.label}>Gender:</Text>
-        <TextInput
-          style={styles.input}
-          value={gender}
-          onChangeText={setGender}
-          placeholder="Enter your gender"
+        <DropDownPicker
+          style={styles.dropdown}
+          multiple={false}
+          open={open}
+          value={value}
+          items={gender}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setGender}
+          placeholder={value}
+          mode="SIMPLE"
         />
 
         <Text style={styles.label}>Contact:</Text>
@@ -224,6 +236,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
   },
 });
 

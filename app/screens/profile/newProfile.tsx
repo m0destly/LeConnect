@@ -1,28 +1,36 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView, Image, TouchableOpacity, LogBox } from 'react-native';
 import firebase from 'firebase/compat';
 import UserContext from '@/app/userContext';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { FIREBASE_STORAGE } from '@/FirebaseConfig';
 import ModalScreen from './modal';
+import initialImage from '../../../assets/images/initial-profile.jpg';
 
 const NewProfileScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
   const [name, setName] = useState('');
   const [age, setAge] = useState(new Number);
-  const [gender, setGender] = useState('');
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+  const [gender, setGender] = useState([
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+  ]);
   const [contact, setContact] = useState('');
   const [bio, setBio] = useState('');
-  const [image, setImage] = useState(
-    'https://i.pinimg.com/originals/28/8f/ab/288fab24c0f04e41ccd3c134161dcc1c.jpg'
-  );
+  const [image, setImage] = useState(Image.resolveAssetSource(initialImage).uri);
   const [fileName, setFileName] = useState('');
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, [])
 
   const handlePress = () => {
     if (
       name.trim().length !== 0 &&
-      gender.trim().length !== 0 &&
+      value.trim().length !== 0 &&
       contact.trim().length !== 0 &&
       bio.trim().length !== 0 &&
       age.toString().trim().length !== 0
@@ -68,7 +76,7 @@ const NewProfileScreen = ({ navigation }) => {
       await firebase.firestore().collection('users').add({
         Name: name,
         Age: age,
-        Gender: gender,
+        Gender: value,
         Contact: contact,
         Bio: bio,
         User: user.id,
@@ -83,7 +91,11 @@ const NewProfileScreen = ({ navigation }) => {
       navigation.popToTop();
       navigation.navigate('LeConnect');
     } catch (error: any) {
-      Alert.alert('Error', 'Unable to create profile. ' + error.message);
+      if (error.code === 'storage/invalid-root-operation') {
+        Alert.alert('Error', 'Please choose a new profile picture to proceed.');
+      } else {
+        Alert.alert('Error', 'Unable to create profile. Please try again later.' + error.message);
+      }
     }
   };
 
@@ -108,11 +120,17 @@ const NewProfileScreen = ({ navigation }) => {
         />
 
         <Text style={styles.label}>Gender:</Text>
-        <TextInput
-          style={styles.input}
-          value={gender}
-          onChangeText={setGender}
-          placeholder="Enter your gender"
+        <DropDownPicker
+          style={styles.dropdown}
+          multiple={false}
+          open={open}
+          value={value}
+          items={gender}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setGender}
+          placeholder={'Select gender...'}
+          mode="SIMPLE"
         />
 
         <Text style={styles.label}>Contact:</Text>
@@ -136,9 +154,9 @@ const NewProfileScreen = ({ navigation }) => {
         <Image
           resizeMode="cover"
           style={styles.image}
-          source={{ uri: image }}
+          source={{uri: image}}
         />
-        
+
         <TouchableOpacity style={styles.changePicButton} onPress={showModal}>
           <Text style={styles.buttonText}>Change Picture</Text>
         </TouchableOpacity>
@@ -219,6 +237,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
   },
 });
 
