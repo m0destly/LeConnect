@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import firebase from 'firebase/compat';
 import UserContext from '@/app/userContext';
-import * as ImagePicker from 'expo-image-picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { FIREBASE_STORAGE } from '@/FirebaseConfig';
 import ModalScreen from './modal';
 
@@ -56,7 +56,7 @@ const NewProfileScreen = ({ navigation }) => {
       await task;
 
       return await reference.getDownloadURL();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading file: ', error.message);
       throw error;
     }

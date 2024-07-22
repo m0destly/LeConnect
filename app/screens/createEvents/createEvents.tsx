@@ -45,7 +45,7 @@ const CreateEventsScreen = ({ navigation }) => {
         Description: description,
         Time: selectedDate,
         Creator: user.id,
-        Participants: new Array<String>(),
+        Participants: [],
         Location: location
       });
       Alert.alert("Success", "Event created successfully!");

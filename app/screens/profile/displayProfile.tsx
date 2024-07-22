@@ -7,40 +7,36 @@ const DisplayProfileScreen = ({ navigation, route }) => {
     const { user } = useContext(UserContext);
     const { Name, Age, Gender, Contact, Bio, User, Pic, PicName } = route.params;
     const [friendMessage, setFriendMessage] = useState('Add Friend');
+    const [isFriend, setIsFriend] = useState(false);
     const [disable, setDisable] = useState(false);
-    
-    useEffect(() => {
-        const checkFriendsAndDuplicates = async () => {
-            try {
-                const friendsSnapshot = await firebase.firestore()
-                    .collection('users')
-                    .where('User', '==', user.id)
-                    .where('Friends', 'array-contains', User)
-                    .get();
-                
-                const duplicateSnapshot = await firebase.firestore()
-                    .collection('requests')
-                    .where('Sender', '==', user.id)
-                    .where('Receiver', '==', User)
-                    .get();
-    
-                if (!friendsSnapshot.empty) {
-                    setFriendMessage('Already friends');
-                    setDisable(true);
-                }
 
-                if (!duplicateSnapshot.empty) {
-                    setFriendMessage('Friend request pending');
-                    setDisable(true);
-                }
-            } catch (error: any) {
-                Alert.alert("Error", error.message);
-            }
-        };
-        
-        checkFriendsAndDuplicates();
-    }, [disable]);
-    
+    useEffect(() => {
+        try {
+            firebase.firestore().collection('users')
+                .where('User', '==', user.id)
+                .where('Friends', 'array-contains', User)
+                .onSnapshot(friendsSnapshot => {
+                    if (!friendsSnapshot.empty) {
+                        setFriendMessage('Already friends');
+                        setDisable(true);
+                        setIsFriend(true);
+                    }
+                });
+            firebase.firestore().collection('requests')
+                .where('Sender', '==', user.id)
+                .where('Receiver', '==', User)
+                .onSnapshot(duplicateSnapshot => {
+                    if (!duplicateSnapshot.empty) {
+                        setFriendMessage('Friend request pending');
+                        setDisable(true);
+                    }
+                });
+
+        } catch (error: any) {
+            Alert.alert('Error, ' + error.message);
+        }
+
+    }, []);
 
     // create a generic function instead
     // need to handle delete documents in 'requests' collection 
@@ -108,23 +104,26 @@ const DisplayProfileScreen = ({ navigation, route }) => {
                 .get();
             if (querySnapshot.empty) {
                 // submit friend request
-                await firebase.firestore().collection('requests').add({
-                    Sender: sender,
-                    Receiver: receiver,
-                })
-                setDisable(true);
+                addRequestToFirebase(sender, receiver);
                 Alert.alert('Friend request sent');
+
             } else {
                 // delete friend request, make friends
                 deleteRequest(receiver, sender);
                 addFriend(sender, receiver);
                 addFriend(receiver, sender);
-                setDisable(true);
                 Alert.alert(`You and ${Name} are now friends!`);
             }
         } catch (error: any) {
             Alert.alert(error.message);
         }
+    }
+
+    const addRequestToFirebase = async (sender: String, receiver: String) => {
+        await firebase.firestore().collection('requests').add({
+            Sender: sender,
+            Receiver: receiver,
+        })
     }
 
     return (
@@ -145,10 +144,15 @@ const DisplayProfileScreen = ({ navigation, route }) => {
                                 <Text style={styles.label}>Age:</Text>
                                 <Text style={styles.text}>{Age}</Text>
                             </View>
-                            <View style={styles.profileField}>
-                                <Text style={styles.label}>Contact:</Text>
-                                <Text style={styles.text}>{Contact}</Text>
-                            </View>
+                            {isFriend ? 
+                                <View style={styles.profileField}>
+                                    <Text style={styles.label}>Contact:</Text>
+                                    <Text style={styles.text}>{Contact}</Text>
+                                </View> : 
+                                <View style={styles.profileField}>
+                                    <Text style={styles.label}>Contact:</Text>
+                                    <Text style={styles.notFriendText}>Add {Name} as a friend to find out!</Text>
+                                </View> }
                             <View style={styles.profileField}>
                                 <Text style={styles.label}>Bio:</Text>
                                 <Text style={styles.text}>{Bio}</Text>
@@ -165,8 +169,14 @@ const DisplayProfileScreen = ({ navigation, route }) => {
                         disabled={disable}
                     />
                 </View>
+                {/* {!isFriend
+                    ?
+                    <View>
+                        <Text>Add {Name} as friend to view his/her contact</Text>
+                    </View>
+                    : <></>} */}
             </View>
-        </ScrollView >
+        </ScrollView>
     );
 };
 
@@ -208,6 +218,10 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 16,
+    },
+    notFriendText: {
+        fontSize: 16,
+        fontStyle: 'italic'
     },
     image: {
         width: 150,

@@ -13,6 +13,7 @@ import ResetPasswordScreen from './screens/login/resetPassword';
 import MapsScreen from './screens/maps/mapsScreen';
 import PushNotifications from './notifications';
 import DisplayProfileScreen from './screens/profile/displayProfile';
+import FriendRequestModalScreen from './screens/friends/friendReqModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ const MyStack = () => {
           <Stack.Screen name="History" component={HistoryScreen} />
           <Stack.Screen name="Maps" component={MapsScreen} />
           <Stack.Screen name="DisplayProfile" component={DisplayProfileScreen} />
+          <Stack.Screen name="FriendRequests" component={FriendRequestModalScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>
