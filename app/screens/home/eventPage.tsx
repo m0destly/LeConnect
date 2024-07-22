@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ImageBackground, Alert, ScrollView, FlatList, Platform, Linking, LogBox } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Button, ImageBackground, Alert, ScrollView, FlatList, Platform, Linking } from 'react-native';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 import { EventProfile, EventProfileData } from '@/app/types.d';
@@ -13,22 +13,51 @@ const EventPage = ({ route, navigation }) => {
   const [canJoin, setCanJoin] = useState(false);
   const [clean, setClean] = useState('');
   const [participants, setParticipants] = useState(new Array<any>());
+  const [creatorFields, setCreatorFields] = useState(new Object);
 
   useEffect(() => {
-    Creator === user.id ? setIsCreator(true) : setIsCreator(false);
-    // query if participant has joined
-    // if not, do nth
-    // if joined, setIsJoined(true)
-    // if isJoined true, button becomes unjoin
-    // unjoin => setIsJoined(false)
-    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-    const initial = Participants.indexOf(user.id);
-    if (initial === -1) {
-      setCanJoin(true);
+    try {
+      Participants.push("-1");
+      firebase
+        .firestore()
+        .collection('users')
+        .where('User', 'in', Participants)
+        .onSnapshot(querySnapshot => {
+          const participantsData = new Array<any>();
+          querySnapshot.forEach(documentSnapshot => {
+            if (!documentSnapshot.data().empty) {
+              participantsData.push(documentSnapshot.data());
+            }
+          });
+          setParticipants(participantsData);
+        });
+
+        firebase
+        .firestore()
+        .collection('users')
+        .where('User', '==', Creator)
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(documentSnapshot => {
+            setCreatorFields(documentSnapshot.data());
+          })
+        });
+    } catch (error: any) {
+      Alert.alert('Error, ' + error.message);
+    } finally {
+      Creator === user.id ? setIsCreator(true) : setIsCreator(false);
+      // query if participant has joined
+      // if not, do nth
+      // if joined, setIsJoined(true)
+      // if isJoined true, button becomes unjoin
+      // unjoin => setIsJoined(false)
+      const initial = Participants.indexOf(user.id);
+      if (initial === -1) {
+        setCanJoin(true);
+      }
+      setIndex(initial);
+      cleanLocation();
     }
-    setIndex(Participants.indexOf(user.id));
-    cleanLocation();
-    displayProfile();
   }, [canJoin]);
 
   const cleanLocation = () => {
@@ -93,27 +122,13 @@ const EventPage = ({ route, navigation }) => {
     }
   };
 
-  const displayProfile = async () => {
-    const participantsData = new Array<any>();
-    for (const participantID of Participants) {
-      const snapshot = await firebase.firestore()
-        .collection("users")
-        .where('User', '==', participantID)
-        .get();
-
-      snapshot.forEach((doc) => {
-        participantsData.push(doc.data());
-        // console.log("Each item: ", doc.data());
-      });
-    }
-    setParticipants(participantsData);
-  }
-
-  const renderEventProfile = ({item}) => {
+  const renderEventProfile = ({ item }) => {
     return (
       <EventProfile
         item={item}
-        onPress={() => toProfile(item)}
+        onPress={() => item.User == user.id
+          ? Alert.alert("Stop!", "Please view your own profile from the Profile tab")
+          : toProfile(item)}
       />
     );
   };
@@ -132,22 +147,17 @@ const EventPage = ({ route, navigation }) => {
   }
 
   return (
-    <ImageBackground
-      source={require('../../../assets/images/join-event.jpeg')}
-      style={styles.background}
-      resizeMode='cover'
-    >
       <ScrollView>
         <View style={styles.overlay}>
           <View style={styles.container}>
             <Text style={styles.title}>{Title}</Text>
             <View style={{ flexDirection: 'column' }}>
-              <Text style={styles.timeHeader}>Time: </Text>
+              <Text style={styles.timeHeader}>Time</Text>
               <Text style={styles.time}>{Time}</Text>
             </View>
 
             <View style={{ flexDirection: 'column' }}>
-              <Text style={styles.timeHeader}>Location: </Text>
+              <Text style={styles.timeHeader}>Location</Text>
               <Text style={styles.time}>{Location}</Text>
               <Button
                 title='Get Directions'
@@ -155,11 +165,26 @@ const EventPage = ({ route, navigation }) => {
               />
             </View>
 
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={styles.timeHeader}>Creator</Text>
+              <TouchableOpacity
+                onPress={() => toProfile(creatorFields)}
+                style={[styles.profileCreatorContainer]}>
+                <Image
+                  source={{ uri: creatorFields.Pic }}
+                  style={styles.profilePic}>
+                </Image>
+                <Text style={styles.profileName}>
+                  {creatorFields.Name}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <Text style={styles.descriptionTitle}>Description</Text>
             <View style={styles.descriptionContainer}>
-              <Text style={styles.descriptionText}>{Description}</Text>
+                <Text style={styles.descriptionText}>{Description}</Text>
             </View>
+
 
             <View style={styles.footer}>
               <Button
@@ -170,16 +195,15 @@ const EventPage = ({ route, navigation }) => {
             </View>
           </View>
           <View style={styles.profileContainer}>
-            {/* flatlist for all the participants in the event */}
-            <Text style={{fontSize: 25, color: 'white'}}>Participants</Text>
+            <Text style={styles.profileHeader}>Participants</Text>
             <FlatList
-            data={participants}
-            renderItem={renderEventProfile}
-          />
+              data={participants}
+              renderItem={renderEventProfile}
+              scrollEnabled={false}
+            />
           </View>
         </View>
       </ScrollView>
-    </ImageBackground>
   );
 };
 
@@ -204,6 +228,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: 'white',
+    alignSelf: 'center',
   },
   timeHeader: {
     fontSize: 18,
@@ -212,7 +237,7 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 18,
     marginBottom: 10,
-    color: 'lightgrey',
+    color: 'white',
     backgroundColor: 'black',
     borderRadius: 20,
     paddingLeft: 10,
@@ -223,12 +248,11 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
-    height: 350,
   },
   descriptionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
     marginBottom: 10,
     textAlign: 'left',
   },
@@ -243,7 +267,32 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flex: 1,
-  }
+  },
+  profileHeader: {
+    fontSize: 25,
+    color: 'black',
+    fontWeight: 'bold'
+  },
+  profileCreatorContainer: {
+    padding: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: 'grey',
+    flexDirection: 'row',
+  },
+  profileName: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginLeft: 10,
+    alignSelf: 'center',
+    color: 'white'
+  },
+  profilePic: {
+    width: 25,
+    height: 25,
+    borderRadius: 10,
+    alignSelf: 'center',
+  },
 });
 
 export default EventPage;
