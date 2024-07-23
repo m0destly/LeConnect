@@ -144,10 +144,10 @@ const CreateEventsScreen = ({ navigation }) => {
             style={styles.input}
             onChangeText={setLocation}
             value={location}
-            placeholder='Paste location here...'
+            placeholder='Paste location from Maps here...'
           />
           <TouchableOpacity style={styles.dateButton} onPress={openMaps}>
-            <Text style={styles.dateButtonText}>Open Maps</Text>
+            <Text style={styles.dateButtonText}>Open {Platform.OS === 'android' ? 'Google Maps' : 'Apple Maps'}</Text>
           </TouchableOpacity>
         </View>
 
@@ -160,7 +160,8 @@ const CreateEventsScreen = ({ navigation }) => {
             placeholder="Enter description here..."
             maxLength={500}
             multiline={true}
-            blurOnSubmit={true}
+            textAlignVertical='top'
+            keyboardType='default'
           />
         </View>
 

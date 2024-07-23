@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity } from 'react-native';
-import { Icon } from 'react-native-elements'
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Icon, Button } from 'react-native-elements'
 import UserContext from '@/app/userContext';
 import firebase from 'firebase/compat';
 import LoginScreen from '../login/login';
@@ -90,9 +90,11 @@ const EventsHubScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={toHistory} style={styles.toHistoryButton}>
-          <Icon name="logout" type="material" size={24} color="black"/>
-      </TouchableOpacity>
+      <Button onPress={toHistory} style={styles.toHistoryButton}
+          title={<Text style={styles.toHistoryText}> To History</Text>}
+          icon={<Icon name="logout" type="material" size={24} color="black"/>}
+      />
+
       <Text style={styles.title}>Events Created By Me</Text>
       <View style={styles.flatListContainer}>
         <FlatList
@@ -122,6 +124,10 @@ const styles = StyleSheet.create({
   toHistoryButton: {
     position: 'relative',
     left: 0,
+    flexDirection: 'row',
+  },
+  toHistoryText: {
+
   },
   title: {
     fontSize: 24,

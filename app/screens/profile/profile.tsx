@@ -8,7 +8,7 @@ import { Button } from 'react-native-elements';
 const ProfileScreen = ({ navigation, route }) => {
 
   const { user } = route.params;
-  const [userData, getUserData] = useState<userProfile>();
+  const [userData, getUserData] = useState();
   const [isEditing, setIsEditing] = useState(false);
   const [docID, getDocID] = useState('');
   const currUser = firebase.auth().currentUser;
@@ -34,12 +34,10 @@ const ProfileScreen = ({ navigation, route }) => {
         .collection('users')
         .where('User', '==', user.id)
         .onSnapshot(querySnapshot => {
-          let profile: userProfile;
             querySnapshot.forEach(documentSnapshot => {
               getDocID(documentSnapshot.id);
-              profile = documentSnapshot.data();
+              getUserData(documentSnapshot.data());
             });
-          getUserData(profile);
         });
     } catch (error: any) {
       Alert.alert("Error", error.message);

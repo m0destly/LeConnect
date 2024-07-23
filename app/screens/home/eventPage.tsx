@@ -147,7 +147,7 @@ const EventPage = ({ route, navigation }) => {
   }
 
   return (
-      <ScrollView>
+      //<ScrollView>
         <View style={styles.overlay}>
           <View style={styles.container}>
             <Text style={styles.title}>{Title}</Text>
@@ -168,7 +168,10 @@ const EventPage = ({ route, navigation }) => {
             <View style={{ flexDirection: 'column' }}>
               <Text style={styles.timeHeader}>Creator</Text>
               <TouchableOpacity
-                onPress={() => toProfile(creatorFields)}
+              onPress={() => 
+                Creator === user.id 
+                  ? Alert.alert("Stop!", "Please view your own profile from the Profile tab") 
+                  : creatorFields}
                 style={[styles.profileCreatorContainer]}>
                 <Image
                   source={{ uri: creatorFields.Pic }}
@@ -181,9 +184,9 @@ const EventPage = ({ route, navigation }) => {
             </View>
 
             <Text style={styles.descriptionTitle}>Description</Text>
-            <View style={styles.descriptionContainer}>
+            <ScrollView style={styles.descriptionContainer}>
                 <Text style={styles.descriptionText}>{Description}</Text>
-            </View>
+            </ScrollView>
 
 
             <View style={styles.footer}>
@@ -199,11 +202,10 @@ const EventPage = ({ route, navigation }) => {
             <FlatList
               data={participants}
               renderItem={renderEventProfile}
-              scrollEnabled={false}
             />
           </View>
         </View>
-      </ScrollView>
+      //</ScrollView>
   );
 };
 
@@ -218,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.25)',
   },
   container: {
-    flex: 1,
+    flex: 5,
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
     paddingTop: 40,
@@ -245,9 +247,10 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     backgroundColor: 'rgba(0,0,0,0.7)',
-    padding: 20,
+    //paddingHorizontal: 20, 
     borderRadius: 10,
     marginBottom: 20,
+    maxHeight: 200,
   },
   descriptionTitle: {
     fontSize: 20,
@@ -260,13 +263,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'left',
     color: 'white',
+    padding: 15,
   },
   footer: {
     marginBottom: 20,
     alignSelf: 'stretch',
   },
   profileContainer: {
-    flex: 1,
+    flex: 1.2,
   },
   profileHeader: {
     fontSize: 25,
