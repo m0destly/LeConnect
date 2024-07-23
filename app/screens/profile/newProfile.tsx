@@ -10,7 +10,7 @@ import initialImage from '../../../assets/images/initial-profile.jpg';
 const NewProfileScreen = ({ navigation }) => {
   const { user } = useContext(UserContext);
   const [name, setName] = useState('');
-  const [age, setAge] = useState(new Number);
+  const [age, setAge] = useState('');
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [gender, setGender] = useState([
@@ -25,6 +25,7 @@ const NewProfileScreen = ({ navigation }) => {
 
   useEffect(() => {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    console.log("original " + image);
   }, [])
 
   const handlePress = () => {
@@ -33,7 +34,7 @@ const NewProfileScreen = ({ navigation }) => {
       value.trim().length !== 0 &&
       contact.trim().length !== 0 &&
       bio.trim().length !== 0 &&
-      age.toString().trim().length !== 0
+      age.trim().length !== 0
     ) {
       makeNewProfile();
     } else {
@@ -72,6 +73,8 @@ const NewProfileScreen = ({ navigation }) => {
 
   const makeNewProfile = async () => {
     try {
+      console.log("CHeck " + image);
+      console.log("check "+ fileName);
       const downloadURL = await uploadFileToFirebase(image, fileName);
       await firebase.firestore().collection('users').add({
         Name: name,
@@ -90,9 +93,9 @@ const NewProfileScreen = ({ navigation }) => {
       Alert.alert('Success', 'You have created your account successfully!');
       navigation.popToTop();
       navigation.navigate('LeConnect');
-    } catch (error: any) {
+    } catch (error : any) {
       if (error.code === 'storage/invalid-root-operation') {
-        Alert.alert('Error', 'Please choose a new profile picture to proceed.');
+        Alert.alert('Error', 'Please add a new profile picture to proceed.');
       } else {
         Alert.alert('Error', 'Unable to create profile. Please try again later.' + error.message);
       }
@@ -113,10 +116,11 @@ const NewProfileScreen = ({ navigation }) => {
         <Text style={styles.label}>Age:</Text>
         <TextInput
           style={styles.input}
-          value={age.toString()}
-          onChangeText={(text) => setAge(Number(text))}
-          keyboardType="numeric"
+          value={age}
+          onChangeText={(input) => setAge(input.replace(/[^1234567890]/g, ''))}
+          keyboardType="number-pad"
           placeholder="Enter your age"
+          maxLength={3}
         />
 
         <Text style={styles.label}>Gender:</Text>
@@ -129,25 +133,28 @@ const NewProfileScreen = ({ navigation }) => {
           setOpen={setOpen}
           setValue={setValue}
           setItems={setGender}
-          placeholder={'Select gender...'}
+          placeholder={'Select gender'}
           mode="SIMPLE"
         />
 
         <Text style={styles.label}>Contact:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.bioInput}
           value={contact}
           onChangeText={setContact}
-          placeholder="Enter your contact"
+          placeholder="Enter your contact information"
+          multiline={true}
+          keyboardType='default'
         />
 
         <Text style={styles.label}>Bio:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.bioInput}
           value={bio}
           onChangeText={setBio}
+          placeholder="Tell others about yourself"
           multiline={true}
-          placeholder="Write a short bio"
+          keyboardType='default'
         />
 
         <Text style={styles.label}>Picture: (Compulsory)</Text>
@@ -210,6 +217,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: '#fff',
   },
+  bioInput: {
+    height: 80,
+    borderColor: '#007BFF',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+  },
   image: {
     width: 150,
     height: 150,
@@ -224,14 +240,14 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 10,
   },
   updateButton: {
     backgroundColor: '#28a745',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
   },
   buttonText: {
     color: 'white',
@@ -243,6 +259,7 @@ const styles = StyleSheet.create({
     borderColor: '#DDDDDD',
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
+    marginBottom: 20,
   },
 });
 

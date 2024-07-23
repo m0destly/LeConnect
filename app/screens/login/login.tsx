@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, LogBox } from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import UserContext from '@/app/userContext';
@@ -8,7 +8,7 @@ import firebase from 'firebase/compat';
 const LoginScreen = ({ navigation }) => {
 
   const { user, saveUser, clearUser } = useContext(UserContext);
-  
+
   const usernameRef = useRef();
   const passwordRef = useRef();
   const [username, setUsername] = useState('');
@@ -43,6 +43,7 @@ const LoginScreen = ({ navigation }) => {
       }
     } catch (error: any) {
       clearUser();
+      LogBox.ignoreAllLogs(true);
       console.error('Sign-in Error:', error);
       if (error.code === 'auth/invalid-email') {
         Alert.alert('Error', `Please enter a valid email.`);
@@ -55,7 +56,7 @@ const LoginScreen = ({ navigation }) => {
       }
     } finally {
       setLoading(false);
-      
+
     }
     // Example: You might want to send the login credentials to your backend server for authentication
     // third case: successful, transit to static home page
@@ -100,23 +101,24 @@ const LoginScreen = ({ navigation }) => {
           secureTextEntry={true}
         />
       </View>
+
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginText}>Time to Connect!</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.signUpBtn} onPress={handleSignUp}>
-        <Text style={styles.signUpText1}> 
-          No account?{' '} 
+      <View style={styles.signUpContainer}>
+        <Text style={styles.signUpText1}>No account?{' '}</Text>
+        <TouchableOpacity style={styles.signUpBtn} onPress={handleSignUp}>
           <Text style={styles.signUpText2}>Sign up here!</Text>
-        </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity style={styles.signUpBtn} onPress={forgetPassword}>
-        <Text style={styles.signUpText1}> 
-          Forgot password?{' '} 
+      <View style={styles.signUpContainer}>
+        <Text style={styles.signUpText1}>Forgot password?{' '}</Text>
+        <TouchableOpacity style={styles.signUpBtn} onPress={forgetPassword}>
           <Text style={styles.signUpText2}>Reset here!</Text>
-        </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
 
     </View>
   );
@@ -165,16 +167,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
-    
+
   },
   signUpText1: {
     fontSize: 16,
   },
   signUpText2: {
-    textDecorationLine: 'underline', 
-    color:"blue",
+    textDecorationLine: 'underline',
+    color: "blue",
     fontSize: 16,
   },
+  signUpContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+  }
 });
 
 export default LoginScreen;

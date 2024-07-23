@@ -17,7 +17,6 @@ const EventPage = ({ route, navigation }) => {
 
   useEffect(() => {
     try {
-      Participants.push("-1");
       firebase
         .firestore()
         .collection('users')
@@ -26,14 +25,13 @@ const EventPage = ({ route, navigation }) => {
           const participantsData = new Array<any>();
           querySnapshot.forEach(documentSnapshot => {
             if (!documentSnapshot.data().empty) {
-    
               participantsData.push(documentSnapshot.data());
             }
           });
           setParticipants(participantsData);
         });
 
-        firebase
+      firebase
         .firestore()
         .collection('users')
         .where('User', '==', Creator)
@@ -44,7 +42,10 @@ const EventPage = ({ route, navigation }) => {
           })
         });
     } catch (error: any) {
-      Alert.alert('Error, ' + error.message);
+      if (error.code !== 'invalid-argument') {
+        Alert.alert('Error, ' + error.message);
+      }
+      console.log(error.code);
     } finally {
       Creator === user.id ? setIsCreator(true) : setIsCreator(false);
       // query if participant has joined
@@ -147,122 +148,112 @@ const EventPage = ({ route, navigation }) => {
     })
   }
 
-  return (   
-        <View style={styles.overlay}>
-          <View style={styles.container}>
-            <Text style={styles.title}>{Title}</Text>
-            <View style={{ flexDirection: 'column' }}>
-              <Text style={styles.timeHeader}>Time</Text>
-              <Text style={styles.time}>{Time}</Text>
-            </View>
+  return (
+    <View style={styles.overlay}>
+      <View style={styles.eventContainer}>
 
-            <View style={{ flexDirection: 'column' }}>
-              <Text style={styles.timeHeader}>Location</Text>
-              <Text style={styles.time}>{Location}</Text>
-              <Button
-                title='Get Directions'
-                onPress={openDirections}
-              />
-            </View>
+        <Text style={styles.title}>{Title}</Text>
 
-            <View style={{ flexDirection: 'column' }}>
-              <Text style={styles.timeHeader}>Creator</Text>
-              <TouchableOpacity
-              onPress={() => 
-                Creator === user.id 
-                  ? Alert.alert("Stop!", "Please view your own profile from the Profile tab") 
-                  : creatorFields}
-                style={[styles.profileCreatorContainer]}>
-                <Image
-                  source={{ uri: creatorFields.Pic }}
-                  style={styles.profilePic}>
-                </Image>
-                <Text style={styles.profileName}>
-                  {creatorFields.Name}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.descriptionTitle}>Description</Text>
-            <ScrollView style={styles.descriptionContainer}>
-                <Text style={styles.descriptionText}>{Description}</Text>
-            </ScrollView>
-
-
-            <View style={styles.footer}>
-              <Button
-                title={canJoin ? 'Join Event!' : 'Leave Event!'}
-                onPress={canJoin ? joinEvent : unjoinEvent}
-                disabled={isCreator}
-              />
-            </View>
-          </View>
-          <View style={styles.profileContainer}>
-            <Text style={styles.profileHeader}>Participants</Text>
-            {participants.length > 0 ?
-              <FlatList
-                data={participants}
-                renderItem={renderEventProfile}
-              /> : 
-              <Text>
-                No participants yet...
-              </Text>
-            }
-            
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldHeader}>Time</Text>
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.field}>{Time}</Text>
           </View>
         </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldHeader}>Location</Text>
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.field}>{Location}</Text>
+          </View>
+          <Button
+            title='Get Directions'
+            onPress={openDirections}
+          />
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldHeader}>Creator</Text>
+          <TouchableOpacity
+            onPress={() =>
+              Creator === user.id
+                ? Alert.alert("Stop!", "Please view your own profile from the Profile tab")
+                : creatorFields}
+            style={styles.profileCreatorContainer}>
+            <Image
+              source={{ uri: creatorFields.Pic }}
+              style={styles.profilePic}>
+            </Image>
+            <Text style={styles.profileName}>
+              {creatorFields.Name}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldHeader}>Description</Text>
+          <ScrollView style={styles.descriptionContainer}>
+            <Text style={styles.descriptionText}>{Description}</Text>
+          </ScrollView>
+        </View>
+
+        <View style={styles.footer}>
+          <Button
+            title={canJoin ? 'Join Event!' : 'Leave Event!'}
+            onPress={canJoin ? joinEvent : unjoinEvent}
+            disabled={isCreator}
+          />
+        </View>
+      </View>
+
+      <View style={styles.profileContainer}>
+        <Text style={styles.fieldHeader}>Participants</Text>
+        {Participants.length > 0 ?
+          <FlatList
+            data={participants}
+            renderItem={renderEventProfile}
+          /> :
+          <Text style={{fontSize: 20}}>
+            Be the first to join this event!
+          </Text>
+        }
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.25)',
   },
-  container: {
-    flex: 5,
+  eventContainer: {
+    flex: 4,
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 30,
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: 'white',
     alignSelf: 'center',
   },
-  timeHeader: {
-    fontSize: 18,
+  fieldHeader: {
+    fontSize: 25,
     fontWeight: 'bold',
   },
-  time: {
+  field: {
     fontSize: 18,
-    marginBottom: 10,
     color: 'white',
-    backgroundColor: 'black',
-    borderRadius: 20,
-    paddingLeft: 10,
     borderLeftWidth: 10,
+    padding: 5,
   },
   descriptionContainer: {
     backgroundColor: 'rgba(0,0,0,0.7)',
-    //paddingHorizontal: 20, 
     borderRadius: 10,
-    marginBottom: 20,
-    maxHeight: 200,
-  },
-  descriptionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
     marginBottom: 10,
-    textAlign: 'left',
+    maxHeight: 150,
   },
   descriptionText: {
     fontSize: 20,
@@ -275,26 +266,23 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   profileContainer: {
-    flex: 1.2,
-  },
-  profileHeader: {
-    fontSize: 25,
-    color: 'black',
-    fontWeight: 'bold'
+    flex: 1.5,
+    padding: 20,
   },
   profileCreatorContainer: {
+    flexDirection: 'row',
     padding: 5,
     borderWidth: 1,
     borderColor: 'black',
     backgroundColor: 'grey',
-    flexDirection: 'row',
+    marginBottom: 10,
   },
   profileName: {
     fontWeight: 'bold',
     fontSize: 20,
     marginLeft: 10,
     alignSelf: 'center',
-    color: 'white'
+    color: 'yellow'
   },
   profilePic: {
     width: 25,
@@ -302,6 +290,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: 'center',
   },
+  fieldContainer: {
+    flexDirection: 'column',
+  }
 });
 
 export default EventPage;

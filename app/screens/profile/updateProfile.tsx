@@ -103,10 +103,11 @@ const UpdateProfileScreen = ({ route, navigation }) => {
         <Text style={styles.label}>Age:</Text>
         <TextInput
           style={styles.input}
-          value={age.toString()}
-          onChangeText={(text) => setAge(Number(text))}
-          keyboardType="numeric"
+          value={age}
+          onChangeText={(input) => setAge(input.replace(/[^1234567890]/g, ''))}
+          keyboardType="number-pad"
           placeholder="Enter your age"
+          maxLength={3}
         />
 
         <Text style={styles.label}>Gender:</Text>
@@ -125,10 +126,10 @@ const UpdateProfileScreen = ({ route, navigation }) => {
 
         <Text style={styles.label}>Contact:</Text>
         <TextInput
-          style={styles.input}
+          style={styles.bioInput}
           value={contact}
           onChangeText={setContact}
-          placeholder="Enter your contact"
+          placeholder="Enter your contact information"
           multiline={true}
           keyboardType='default'
         />
@@ -226,14 +227,14 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 10,
   },
   updateButton: {
     backgroundColor: '#28a745',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 20,
   },
   buttonText: {
     color: 'white',
@@ -245,6 +246,7 @@ const styles = StyleSheet.create({
     borderColor: '#DDDDDD',
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
+    marginBottom: 20,
   },
 });
 
