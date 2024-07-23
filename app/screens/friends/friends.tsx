@@ -86,7 +86,7 @@ const FriendsScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Button
-                title="Manage Friend Request"
+                title="Manage Friend Requests"
                 onPress={showRequests}
                 icon={<Icon name="group-add" type="material" size={20} color="white" />}
             />

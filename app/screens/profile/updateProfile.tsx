@@ -129,6 +129,8 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           value={contact}
           onChangeText={setContact}
           placeholder="Enter your contact"
+          multiline={true}
+          keyboardType='default'
         />
 
         <Text style={styles.label}>Bio:</Text>
@@ -137,7 +139,8 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           value={bio}
           onChangeText={setBio}
           multiline={true}
-          placeholder="Write a short bio"
+          placeholder="Tell others about yourself"
+          keyboardType='default'
         />
 
         <Text style={styles.label}>Profile Picture:</Text>

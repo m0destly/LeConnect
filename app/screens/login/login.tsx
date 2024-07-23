@@ -87,6 +87,7 @@ const LoginScreen = ({ navigation }) => {
           placeholder="Username"
           placeholderTextColor="#ffffff"
           onChangeText={setUsername}
+          autoCapitalize='none'
         />
       </View>
       <View style={styles.inputView}>

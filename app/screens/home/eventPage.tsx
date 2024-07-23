@@ -26,6 +26,7 @@ const EventPage = ({ route, navigation }) => {
           const participantsData = new Array<any>();
           querySnapshot.forEach(documentSnapshot => {
             if (!documentSnapshot.data().empty) {
+    
               participantsData.push(documentSnapshot.data());
             }
           });
@@ -146,8 +147,7 @@ const EventPage = ({ route, navigation }) => {
     })
   }
 
-  return (
-      //<ScrollView>
+  return (   
         <View style={styles.overlay}>
           <View style={styles.container}>
             <Text style={styles.title}>{Title}</Text>
@@ -199,13 +199,18 @@ const EventPage = ({ route, navigation }) => {
           </View>
           <View style={styles.profileContainer}>
             <Text style={styles.profileHeader}>Participants</Text>
-            <FlatList
-              data={participants}
-              renderItem={renderEventProfile}
-            />
+            {participants.length > 0 ?
+              <FlatList
+                data={participants}
+                renderItem={renderEventProfile}
+              /> : 
+              <Text>
+                No participants yet...
+              </Text>
+            }
+            
           </View>
         </View>
-      //</ScrollView>
   );
 };
 
