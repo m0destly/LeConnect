@@ -23,13 +23,13 @@ const MyStack = () => {
       <NavigationContainer independent={true}>
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Notifications" component={PushNotifications} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
+          <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{headerTitle: 'Reset Password'}} />
           <Stack.Screen name="LeConnect" component={MainTabNavigator} />
-          <Stack.Screen name="EventPage" component={EventPage} />
-          <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} />
+          <Stack.Screen name="EventPage" component={EventPage} options={{headerTitle: 'Event Page'}} />
+          <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} options={{headerTitle: 'Update Profile'}} />
           <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="NewProfile" component={NewProfileScreen} />
+          <Stack.Screen name="NewProfile" component={NewProfileScreen} options={{headerTitle: 'Create Profile'}} />
           <Stack.Screen name="History" component={HistoryScreen} />
           <Stack.Screen name="Maps" component={MapsScreen} />
           <Stack.Screen name="DisplayProfile" component={DisplayProfileScreen} />

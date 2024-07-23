@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, LogBox } from 'react-native';
 import { FIREBASE_AUTH } from '@/FirebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import UserContext from '@/app/userContext';
@@ -33,6 +33,7 @@ const RegisterScreen = ({ navigation }) => {
         navigation.navigate('NewProfile');
       }
     } catch (error: any) {
+      LogBox.ignoreAllLogs(true);
       console.error('Sign-up Error:', error);
       if (error.code === 'auth/email-already-in-use') {
         Alert.alert('Error', 'Email already exists.');
@@ -63,6 +64,7 @@ const RegisterScreen = ({ navigation }) => {
           placeholder="Email"
           placeholderTextColor="#ffffff"
           onChangeText={setEmail}
+          autoCapitalize='none'
         />
       </View>
       <View style={styles.inputView}>

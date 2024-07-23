@@ -97,10 +97,12 @@ const FriendsScreen = ({ navigation }) => {
                 
             />
             <View style={styles.flatListContainer}>
+            {friendsProfiles.length !== 0 ?
                 <FlatList
                     data={friendsProfiles}
                     renderItem={renderEventProfile}
-                />
+                /> : <Text style={styles.noFriendsText}>No friends yet...</Text>
+            }
             </View>
         </View>
     )
@@ -111,8 +113,13 @@ const styles = StyleSheet.create({
         flex: 1
     },
     flatListContainer: {
-        marginTop: 40,
-        justifyContent: 'center'
+        marginTop: 30,
+        justifyContent: 'center',
+        
+    },
+    noFriendsText: {
+        textAlign: 'center',
+        fontSize: 20
     }
 });
 
