@@ -181,7 +181,7 @@ const EventPage = ({ route, navigation }) => {
             onPress={() =>
               Creator === user.id
                 ? Alert.alert("Stop!", "Please view your own profile from the Profile tab")
-                : creatorFields}
+                : toProfile(creatorFields)}
             style={styles.profileCreatorContainer}>
             <Image
               source={{ uri: creatorFields.Pic }}

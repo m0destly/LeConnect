@@ -11,7 +11,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
   const { Name, Age, Gender, Contact, Bio, DocID, Pic, PicName } = route.params;
 
   const [name, setName] = useState(Name);
-  const [age, setAge] = useState<String>(Age);
+  const [age, setAge] = useState(Age);
   const [contact, setContact] = useState(Contact);
   const [bio, setBio] = useState(Bio);
   const [image, setImage] = useState(Pic);
@@ -26,7 +26,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
 
   const updateProfile = async () => {
     try {
-      if (image !== Pic) {
+      if (fileName !== PicName) {
         const downloadURL = await uploadFileToFirebase(image, fileName);
         await firebase.firestore().collection('users').doc(DocID).update({
           Name: name,

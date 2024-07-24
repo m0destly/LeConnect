@@ -32,7 +32,7 @@ const MyStack = () => {
           <Stack.Screen name="NewProfile" component={NewProfileScreen} options={{headerTitle: 'Create Profile'}} />
           <Stack.Screen name="History" component={HistoryScreen} />
           <Stack.Screen name="Maps" component={MapsScreen} />
-          <Stack.Screen name="DisplayProfile" component={DisplayProfileScreen} />
+          <Stack.Screen name="DisplayProfile" component={DisplayProfileScreen} options={{headerTitle: 'User Profile'}} />
           <Stack.Screen name="FriendRequests" component={FriendRequestModalScreen} />
         </Stack.Navigator>
       </NavigationContainer>

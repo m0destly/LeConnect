@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
     width: '50%',
   },
   image: {
