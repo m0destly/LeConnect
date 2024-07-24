@@ -149,10 +149,14 @@ const EventPage = ({ route, navigation }) => {
 
   return (
     <View style={styles.overlay}>
+      <View style={{ flex: 1, marginLeft: 20 }}>
+        <ScrollView contentContainerStyle={{
+        }} horizontal={true}>
+          <Text style={styles.title}>{Title}</Text>
+        </ScrollView>
+      </View>
+
       <View style={styles.eventContainer}>
-
-        <Text style={styles.title}>{Title}</Text>
-
         <View style={styles.fieldContainer}>
           <Text style={styles.fieldHeader}>Time</Text>
           <View style={styles.descriptionContainer}>
@@ -203,19 +207,18 @@ const EventPage = ({ route, navigation }) => {
             disabled={isCreator}
           />
         </View>
-      </View>
 
-      <View style={styles.profileContainer}>
         <Text style={styles.fieldHeader}>Participants</Text>
         {Participants.length > 0 ?
           <FlatList
             data={participants}
             renderItem={renderEventProfile}
           /> :
-          <Text style={{fontSize: 20}}>
+          <Text style={{ fontSize: 20 }}>
             Be the first to join this event!
           </Text>
         }
+
       </View>
     </View>
   );
@@ -227,15 +230,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.25)',
   },
   eventContainer: {
-    flex: 4,
+    flex: 10,
     justifyContent: 'flex-start',
     paddingHorizontal: 20,
-    paddingTop: 30,
+    paddingTop: 10,
   },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 10,
     alignSelf: 'center',
   },
   fieldHeader: {
@@ -245,8 +247,8 @@ const styles = StyleSheet.create({
   field: {
     fontSize: 18,
     color: 'white',
-    borderLeftWidth: 10,
-    padding: 5,
+    paddingLeft: 15,
+    paddingVertical: 5,
   },
   descriptionContainer: {
     backgroundColor: 'rgba(0,0,0,0.7)',
@@ -261,12 +263,8 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   footer: {
-    marginBottom: 20,
+    marginBottom: 10,
     alignSelf: 'stretch',
-  },
-  profileContainer: {
-    flex: 1.5,
-    padding: 20,
   },
   profileCreatorContainer: {
     flexDirection: 'row',
