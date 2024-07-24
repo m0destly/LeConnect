@@ -121,11 +121,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  toHistoryButton: {
-    position: 'relative',
-    left: 0,
-    flexDirection: 'row',
-  },
   toHistoryText: {
 
   },

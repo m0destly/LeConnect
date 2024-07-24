@@ -145,6 +145,7 @@ const NewProfileScreen = ({ navigation }) => {
           placeholder="Enter your contact information"
           multiline={true}
           keyboardType='default'
+          textAlignVertical='top'
         />
 
         <Text style={styles.label}>Bio:</Text>
@@ -155,6 +156,7 @@ const NewProfileScreen = ({ navigation }) => {
           placeholder="Tell others about yourself"
           multiline={true}
           keyboardType='default'
+          textAlignVertical='top'
         />
 
         <Text style={styles.label}>Picture: (Compulsory)</Text>

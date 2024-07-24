@@ -45,7 +45,6 @@ const EventPage = ({ route, navigation }) => {
       if (error.code !== 'invalid-argument') {
         Alert.alert('Error, ' + error.message);
       }
-      console.log(error.code);
     } finally {
       Creator === user.id ? setIsCreator(true) : setIsCreator(false);
       // query if participant has joined

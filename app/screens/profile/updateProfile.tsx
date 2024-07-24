@@ -9,9 +9,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 const UpdateProfileScreen = ({ route, navigation }) => {
   const { user } = useContext(UserContext);
   const { Name, Age, Gender, Contact, Bio, DocID, Pic, PicName } = route.params;
-  
+
   const [name, setName] = useState(Name);
-  const [age, setAge] = useState(Age);
+  const [age, setAge] = useState<String>(Age);
   const [contact, setContact] = useState(Contact);
   const [bio, setBio] = useState(Bio);
   const [image, setImage] = useState(Pic);
@@ -48,13 +48,24 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           PicName: fileName,
         });
       }
-      
+
       Alert.alert("Success", "Your details have been updated!");
       navigation.pop();
     } catch (error: any) {
       Alert.alert("Error", "Failed to update details: " + error.message);
     }
   };
+
+  const handlePress = () => {
+    if (name.trim().length !== 0 &&
+      age.trim().length !== 0 &&
+      contact.trim().length !== 0 &&
+      bio.trim().length !== 0) {
+      updateProfile();
+    } else {
+      Alert.alert("Error", "You cannot leave any field empty");
+    }
+  }
 
   const showModal = () => {
     setIsVisible(true);
@@ -66,12 +77,13 @@ const UpdateProfileScreen = ({ route, navigation }) => {
 
   const uploadFileToFirebase = async (fileUri, fileName) => {
     try {
-      const originalRef = FIREBASE_STORAGE.ref(PicName);
-      originalRef.delete().then(() => {
-        console.log("Original file deleted successfully");
-      }).catch((error: any) => {
-        console.log("Original file cannot be deleted");
-      });
+      const deleteOriginal = () => {
+        FIREBASE_STORAGE.ref(PicName).delete().then(() => {
+          console.log("Original file deleted successfully");
+        }).catch((error: any) => {
+          console.log("Original file cannot be deleted");
+        });
+      }
       const response = await fetch(fileUri);
       const blob = await response.blob();
       const reference = FIREBASE_STORAGE.ref(fileName);
@@ -80,6 +92,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
       task.on('state_changed', taskSnapshot => {
         console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
       });
+      task.then((snapshot) => deleteOriginal());
 
       await task;
       return await reference.getDownloadURL();
@@ -132,6 +145,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           placeholder="Enter your contact information"
           multiline={true}
           keyboardType='default'
+          textAlignVertical='top'
         />
 
         <Text style={styles.label}>Bio:</Text>
@@ -142,6 +156,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           multiline={true}
           placeholder="Tell others about yourself"
           keyboardType='default'
+          textAlignVertical='top'
         />
 
         <Text style={styles.label}>Profile Picture:</Text>
@@ -150,12 +165,12 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           style={styles.image}
           source={{ uri: image }}
         />
-        
+
         <TouchableOpacity style={styles.changePicButton} onPress={showModal}>
           <Text style={styles.buttonText}>Change Picture</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.updateButton} onPress={updateProfile}>
+        <TouchableOpacity style={styles.updateButton} onPress={handlePress}>
           <Text style={styles.buttonText}>Update Profile</Text>
         </TouchableOpacity>
 
