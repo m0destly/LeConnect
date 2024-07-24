@@ -166,7 +166,7 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
         >
             <View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Friend Requests</Text>
+                    <Text style={styles.modalTitle}>My Friend Requests</Text>
                     <FlatList
                         data={friendRequests}
                         renderItem={renderRequest}

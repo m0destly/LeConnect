@@ -65,7 +65,7 @@ const HomeScreen = ({ navigation }) => {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
+      <Text style={styles.title}>Home</Text>
       <View style={styles.filterContainer}>
         <Text style={styles.filterText}>Sort by:</Text>
         <View style={styles.pickerContainer}>

@@ -2,6 +2,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { View, StyleSheet, Modal, Text, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import 'react-native-get-random-values';
+import {v4 as uuidv4} from 'uuid';
 
 const ModalScreen = ({ visible, onClose, setImage, setFileName }) => {
 
@@ -9,13 +11,13 @@ const ModalScreen = ({ visible, onClose, setImage, setFileName }) => {
     const status = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status) {
       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         quality: 1,
       });
       if (!result.canceled) {
         setImage(result.assets[0].uri);
-        setFileName(result.assets[0].fileName);
+        setFileName(uuidv4());
         onClose();
       }
     }
@@ -25,13 +27,13 @@ const ModalScreen = ({ visible, onClose, setImage, setFileName }) => {
     const status = await ImagePicker.requestCameraPermissionsAsync();
     if (status) {
       let result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         quality: 1,
       });
       if (!result.canceled) {
         setImage(result.assets[0].uri);
-        setFileName(result.assets[0].fileName);
+        setFileName(uuidv4());
         onClose();
       }
     }

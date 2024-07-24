@@ -74,7 +74,6 @@ const NewProfileScreen = ({ navigation }) => {
   const makeNewProfile = async () => {
     try {
       console.log("CHeck " + image);
-      console.log("check "+ fileName);
       const downloadURL = await uploadFileToFirebase(image, fileName);
       await firebase.firestore().collection('users').add({
         Name: name,
