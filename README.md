@@ -2,7 +2,7 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## How to 
+## Download on PC and Test LeConnect
 
 1. Install required dependencies
 
@@ -25,13 +25,12 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Test through Expo Go App on Mobile Device
 
-When you're ready, run:
+1. Install Expo Go on the [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent&pcampaignid=web_share) or [Apple App Store](https://apps.apple.com/us/app/expo-go/id982107779)
 
-```bash
-npm run reset-project
-```
+2. On your mobile device, click [here](exp://u.expo.dev/560b3be0-c28c-4d81-8765-e0b17ae89767/group/34ebe5e4-5201-49b3-addd-cdee050fc599) to open the link or scan the QR code below
+![screenshot](assets/images/QRcode.png)
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
