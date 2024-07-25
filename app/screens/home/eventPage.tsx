@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Button, Modal, Alert, ScrollView, FlatList, Platform, Linking } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, Alert, ScrollView, FlatList, Platform, Linking } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 import { EventProfile, EventProfileData } from '@/app/types.d';
@@ -7,7 +8,7 @@ import { EventProfile, EventProfileData } from '@/app/types.d';
 const EventPage = ({ route, navigation }) => {
 
   const { user } = useContext(UserContext);
-  const { Title, Category, Time, id, Description, Creator, Participants, Location } = route.params;
+  const { Title, Time, id, Description, Creator, Participants, Location } = route.params;
   const [isCreator, setIsCreator] = useState(false);
   const [index, setIndex] = useState(-1);
   const [canJoin, setCanJoin] = useState(false);
@@ -18,6 +19,7 @@ const EventPage = ({ route, navigation }) => {
 
   useEffect(() => {
     try {
+      // obtain the Creator
       firebase
         .firestore()
         .collection('users')
@@ -26,9 +28,11 @@ const EventPage = ({ route, navigation }) => {
         .then(querySnapshot => {
           querySnapshot.forEach(documentSnapshot => {
             setCreatorFields(documentSnapshot.data());
+            console.log("Document: ", documentSnapshot.data());
           })
         });
-
+      
+      // obtain all the data of the participants
       firebase
         .firestore()
         .collection('users')
@@ -44,6 +48,7 @@ const EventPage = ({ route, navigation }) => {
         });
 
     } catch (error: any) {
+      // handles the case where Participants array is empty in the bggining
       if (error.code !== 'invalid-argument') {
         Alert.alert('Error, ' + error.message);
       }
@@ -56,6 +61,7 @@ const EventPage = ({ route, navigation }) => {
       // if isJoined true, button becomes unjoin
       // unjoin => setIsJoined(false)
       const initial = Participants.indexOf(user.id);
+      // initial === -1 refers to user.id not found in the array
       if (initial === -1) {
         setCanJoin(true);
       }
@@ -157,7 +163,7 @@ const EventPage = ({ route, navigation }) => {
       .doc(id)
       .delete()
       .then(() => {
-        setIsVisible(false);
+        closeModal();
         navigation.pop();
         Alert.alert('Success', 'Event deleted successfully');
       })
@@ -166,7 +172,12 @@ const EventPage = ({ route, navigation }) => {
       )
   }
 
-  const handleReject = () => {
+  // opens the modal
+  const openModal = () => {
+    setIsVisible(true);
+  }
+
+  const closeModal = () => {
     setIsVisible(false);
   }
 
@@ -189,13 +200,22 @@ const EventPage = ({ route, navigation }) => {
 
         <View style={styles.fieldContainer}>
           <Text style={styles.fieldHeader}>Location</Text>
-          <View style={styles.descriptionContainer}>
+          <ScrollView style={styles.descriptionContainer} horizontal={true}>
             <Text style={styles.field}>{Location}</Text>
-          </View>
+          </ScrollView>
           <Button
-            title='Get Directions'
+            title='Directions'
             onPress={openDirections}
+            icon={<Icon 
+              name='place'
+              type='material'
+              color='white' />
+            }
+            titleStyle={{ marginHorizontal: 5 }}
+            buttonStyle={{
+              borderRadius: 30}}
           />
+
         </View>
 
         <View style={styles.fieldContainer}>
@@ -225,8 +245,29 @@ const EventPage = ({ route, navigation }) => {
 
         <View style={styles.footer}>
           <Button
-            title={isCreator ? 'Remove Event' : (canJoin ? 'Join Event!' : 'Leave Event!')}
-            onPress={isCreator ? () => setIsVisible(true) : (canJoin ? joinEvent : unjoinEvent)}
+            title={isCreator 
+              ? 'Delete Event' 
+              : (canJoin 
+                  ? 'Join Event' 
+                  : 'Leave Event')}
+            onPress={isCreator 
+              // shows the modal if is a creator
+              ? openModal 
+              : (canJoin 
+                  ? joinEvent 
+                  : unjoinEvent)}
+            titleStyle={{ marginHorizontal: 5 }}
+            buttonStyle={isCreator 
+              ? { backgroundColor: 'red', borderRadius: 30 } 
+              : (canJoin ? {backgroundColor: 'green', borderRadius: 30} 
+                : {backgroundColor: 'orange', borderRadius: 30})}
+            icon={ isCreator 
+              ? <Icon name="delete" type="material" size={20} color="white"/>
+              : (canJoin
+                ? <Icon name="person-add-alt-1" type="material" size={20} color="white"/>
+                : <Icon name="person-remove-alt-1" type="material" size={20} color="white"/>
+              )
+            }
           />
         </View>
 
@@ -244,20 +285,51 @@ const EventPage = ({ route, navigation }) => {
         <Modal
           transparent={true}
           visible={isVisible}
-          onRequestClose={() => setIsVisible(false)}
+          onRequestClose={closeModal}
         >
           <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalText}>Are you sure you want to delete this event?</Text>
 
               <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={handleConfirm}>
-                  <Text style={styles.buttonText}>Yes</Text>
-                </TouchableOpacity>
+                <Button
+                  title='Yes'
+                  onPress={handleConfirm}
+                  icon={<Icon
+                    name='done'
+                    type='material'
+                    color='white' />
+                  }
+                  titleStyle={{ 
+                    marginHorizontal: 5,
+                    color: 'white' 
+                  }}
+                  buttonStyle={{
+                    backgroundColor: 'red',
+                    borderRadius: 30,
+                    width: 80
+                  }}
+                />
 
-                <TouchableOpacity style={styles.button} onPress={handleReject}>
-                  <Text style={styles.buttonText}>No</Text>
-                </TouchableOpacity>
+                <Button
+                  title='No'
+                  onPress={closeModal}
+                  icon={<Icon
+                    name='close'
+                    type='material'
+                    color='white' 
+                  />}
+                  titleStyle={{ 
+                    marginHorizontal: 5,
+                    color: 'white'
+                   }}
+                  buttonStyle={{
+                    backgroundColor: 'green',
+                    borderRadius: 30,
+                    width: 80
+                  }}
+                />
+
               </View>
             </View>
           </View>
@@ -284,6 +356,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
   },
+  fieldContainer: {
+    flexDirection: 'column',
+  },
   fieldHeader: {
     fontSize: 25,
     fontWeight: 'bold',
@@ -291,7 +366,7 @@ const styles = StyleSheet.create({
   field: {
     fontSize: 18,
     color: 'white',
-    paddingLeft: 15,
+    paddingHorizontal: 15,
     paddingVertical: 5,
   },
   descriptionContainer: {
@@ -306,10 +381,6 @@ const styles = StyleSheet.create({
     color: 'white',
     padding: 15,
   },
-  footer: {
-    marginBottom: 10,
-    alignSelf: 'stretch',
-  },
   profileCreatorContainer: {
     flexDirection: 'row',
     padding: 5,
@@ -323,7 +394,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 10,
     alignSelf: 'center',
-    color: 'yellow'
+    color: 'white',
   },
   profilePic: {
     width: 25,
@@ -331,8 +402,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: 'center',
   },
-  fieldContainer: {
-    flexDirection: 'column',
+  footer: {
+    marginBottom: 10,
+    alignSelf: 'stretch',
   },
   modalBackground: {
     flex: 1,
@@ -353,17 +425,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-evenly',
     width: '100%',
-  },
-  button: {
-    padding: 10,
-    backgroundColor: '#2196F3',
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
   },
 });
 

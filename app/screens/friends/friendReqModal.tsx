@@ -11,49 +11,6 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
     const { user } = useContext(UserContext);
     const [friendRequests, setFriendRequests] = useState(new Array<any>());
 
-    // use on snapshot to obtain requests where receiver is curr user
-    // useEffect(() => {
-    //     try {
-    //         firebase.firestore()
-    //             .collection('requests')
-    //             .where('Receiver', '==', user.id)
-    //             .onSnapshot(querySnapshot => {
-    //                 const friendRequestsFromDB = new Array<any>();
-    //                 querySnapshot.forEach(documentSnapshot => {
-    //                     const currSender = documentSnapshot.data().Sender;
-    //                     const docID = documentSnapshot.id;
-    //                     console.log(currSender);
-    //                     console.log(docID);
-    //                     obtainUserData(currSender).then(friend => {
-    //                         console.log("Profile " + friend);
-    //                         friendRequestsFromDB.push({
-    //                             id: docID,
-    //                             ...friend,
-    //                         });
-    //                     });
-    //                 });
-    //                 setFriendRequests(friendRequestsFromDB);
-    //             });
-
-    //     } catch (error: any) {
-    //         Alert.alert('Error, ' + error.message);
-    //     }
-    // }, [])
-
-    // // a function that gets the user data from back end
-    // const obtainUserData = async (id: String) => {
-    //     let tempData = new Object;
-    //     const snapshot = await firebase.firestore()
-    //         .collection('users')
-    //         .where('User', '==', id)
-    //         .get();
-    //     snapshot.forEach(documentSnapshot => {
-    //         tempData = documentSnapshot.data();
-    //     })
-    //     console.log("TempData: " + tempData);
-    //     return tempData;
-    // }
-
     useEffect(() => {
         try {
             firebase.firestore()
@@ -97,7 +54,6 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
             snapshot.forEach(documentSnapshot => {
                 tempData = documentSnapshot.data();
             })
-            //console.log("TempData: " + tempData);
             return tempData;
         } catch (error: any) {
             console.log("Error fetching user data: ", error.message);
@@ -121,7 +77,6 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
         addFriend(sender, receiver);
         addFriend(receiver, sender);
         Alert.alert("Friend request accepted");
-
     }
 
     const addFriend = async (sender: String, receiver: String) => {
@@ -215,6 +170,7 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
     return (
         <Modal
             visible={visible}
+            transparent={true}
             onDismiss={onClose}
         >
             <View style={styles.modalBackground}>
@@ -224,18 +180,18 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
                         <FlatList
                             data={friendRequests}
                             renderItem={renderRequest}
-                            initialNumToRender={5}
-                            style={{ flex: 1 }}
                         /> :
                         <View style={{ flex: 1, justifyContent: 'center' }}>
                             <Text style={{ fontSize: 18 }}>No requests currently...</Text>
                         </View>
                     }
-                    <TouchableOpacity
-                        style={styles.modalCancel}
-                        onPress={onClose}>
-                        <Text style={styles.modalCancelText}>Cancel</Text>
-                    </TouchableOpacity>
+                    <Button
+                        title="Cancel"
+                        titleStyle={{ marginHorizontal: 5 }}
+                        onPress={onClose}
+                        buttonStyle={{ borderRadius: 30, backgroundColor: 'red' }}
+                        icon={<Icon name="cancel" type="material" size={20} color='white' />}
+                    />
                 </View>
             </View>
         </Modal>
@@ -262,15 +218,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
-    },
-    modalCancel: {
-        backgroundColor: "#A30000",
-        borderRadius: 10,
-        padding: 10,
-    },
-    modalCancelText: {
-        fontSize: 20,
-        color: 'white',
     },
     requestBlock: {
         flexDirection: 'row',

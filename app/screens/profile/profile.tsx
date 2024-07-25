@@ -1,32 +1,19 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, TextInput, KeyboardAvoidingView, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert, Image, TextInput, ScrollView } from 'react-native';
 import firebase from 'firebase/compat';
-import UserContext from '@/app/userContext';
-import { Button } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 
 
 const ProfileScreen = ({ navigation, route }) => {
 
   const { user } = route.params;
   const [userData, getUserData] = useState();
-  const [isEditing, setIsEditing] = useState(false);
   const [docID, getDocID] = useState('');
   const currUser = firebase.auth().currentUser;
   const [isPressed, setIsPressed] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPW, setConfirmPW] = useState('');
-  const [message, setMessaage] = useState('');
-
-  type userProfile = {
-    Name: String;
-    Age: Number;
-    Gender: String;
-    Contact: String;
-    Bio: String;
-    User: String;
-    Pic: String;
-    PicName: String;
-  };
+  const [message, setMessage] = useState('');
 
   const retrieveProfile = async () => {
     try {
@@ -61,18 +48,18 @@ const ProfileScreen = ({ navigation, route }) => {
     if (newPassword === confirmPW && newPassword !== '' && confirmPW !== '') {
       currUser?.updatePassword(newPassword)
         .then(() => {
-          setMessaage('');
+          setMessage('');
           setConfirmPW('');
           setNewPassword('');
           setIsPressed(false);
           Alert.alert('Update successful', 'Your password has been changed');
         })
         .catch((error) => {
-          setMessaage(error.message);
+          setMessage(error.message);
         })
 
     } else {
-      setMessaage('Passwords do not match / Cannot be empty');
+      setMessage('Passwords do not match / Cannot be empty');
     }
   }
 
@@ -83,9 +70,7 @@ const ProfileScreen = ({ navigation, route }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContents}>
       <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>My Profile</Text>
-        </View>
+        <Text style={styles.title}>My Profile</Text>
         <View style={styles.profileContainer}>
           <View style={styles.profilePic}>
             <View style={styles.profileDetails}>
@@ -115,14 +100,21 @@ const ProfileScreen = ({ navigation, route }) => {
               style={styles.image}
             />
           </View>
-          <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
-            <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit'}</Text>
-          </TouchableOpacity>
+          <Button
+            title="Edit Profile"
+            titleStyle={{ marginHorizontal: 5 }}
+            icon={<Icon name="edit" type="material" size={20} color="white"/>}
+            buttonStyle={{borderRadius: 30}}
+            onPress={handleEditPress}
+          />
+
         </View>
         <Button
           title='Change Password'
+          titleStyle={{marginHorizontal: 5}}
           onPress={() => setIsPressed(!isPressed)}
           buttonStyle={styles.changePassword}
+          icon={<Icon name="lock-reset" type="material" size={20} color="white"/>}
         />
         <View style={styles.passwordContainer}>
           {isPressed && (
@@ -146,6 +138,8 @@ const ProfileScreen = ({ navigation, route }) => {
                 title='Confirm'
                 onPress={handleChangePassword}
                 buttonStyle={styles.confirm}
+                titleStyle={{marginHorizontal: 5}}
+                icon={<Icon name='check-circle-outline' type='material' color='white' size={20}/>}
               />
             </View>
           )}
@@ -166,15 +160,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-  },
-  titleContainer: {
-    flex: 0.5,
-    justifyContent: 'center',
+    marginVertical: 30,
   },
   container: {
     flex: 1,
     alignItems: 'center',
-    //justifyContent: 'center',
     backgroundColor: '#f0f0f0',
   },
   profileContainer: {
@@ -195,6 +185,7 @@ const styles = StyleSheet.create({
   profilePic: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
   },
   profileField: {
     marginBottom: 10,
@@ -206,20 +197,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
   },
-  editButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 100,
-    alignItems: 'center',
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  editButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    //fontWeight: 'bold',
-    width: '50%',
-  },
   image: {
     width: 150,
     height: 150,
@@ -230,20 +207,21 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   changePassword: {
-    backgroundColor: '#007bff',
     paddingVertical: 10,
     paddingHorizontal: 50,
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 30,
     marginTop: 30,
+    width: 300,
   },
   confirm: {
     backgroundColor: 'green',
     paddingVertical: 10,
     paddingHorizontal: 50,
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 30,
     marginTop: 20,
+    width: 300,
   },
   passwordInput: {
     fontSize: 20,

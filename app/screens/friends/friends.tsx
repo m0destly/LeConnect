@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, ScrollView, Text, Alert, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Alert, FlatList, StyleSheet } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import firebase from 'firebase/compat';
 import { EventProfile, EventProfileData } from '@/app/types.d';
@@ -48,7 +48,6 @@ const FriendsScreen = ({ navigation }) => {
                 .onSnapshot(querySnapshot => {
                     const promises = []; // Array to store all promises for Firebase queries
                     querySnapshot.forEach(documentSnapshot => {
-                        // console.log("Array from backend: ", documentSnapshot.data().Friends);
                         // for loop in here
                         for (const friends of documentSnapshot.data().Friends) {
                             const friendQuery = firebase.firestore()
@@ -66,7 +65,6 @@ const FriendsScreen = ({ navigation }) => {
                             querySnapshots.forEach(querySnapshot => {
                                 querySnapshot.forEach(documentSnapshot => {
                                     profileArray.push(documentSnapshot.data());
-                                    // console.log("DocumentSnapshot: ", documentSnapshot.data());
                                 });
                             });
 
@@ -92,7 +90,6 @@ const FriendsScreen = ({ navigation }) => {
             snapshot.forEach(documentSnapshot => {
                 tempData = documentSnapshot.data();
             })
-            //console.log("TempData: " + tempData);
             return tempData;
         } catch (error: any) {
             console.log("Error fetching user data: ", error.message);
@@ -133,17 +130,24 @@ const FriendsScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Button
-                title={`  Pending Friend Requests: ${friendRequests.length}`}
-                onPress={showRequests}
-                icon={<Icon name="group-add" type="material" size={20} color="white" />}
-            />
+            <Text style={styles.title}>Friends</Text>
             <FriendRequestModalScreen
                 visible={isVisible}
                 onClose={hideRequests}
                 navigation={navigation}
             />
             <View style={styles.flatListContainer}>
+                <Button
+                    title={`Pending Friend Requests: ${friendRequests.length}`}
+                    titleStyle={{ marginHorizontal: 5 }}
+                    onPress={showRequests}
+                    icon={<Icon name="group-add" type="material" size={20} color="white" />}
+                    buttonStyle={{
+                        justifyContent: 'center',
+                        marginBottom: 10,
+                    }}
+                />
+
                 {friendsProfiles.length !== 0 ?
                     <FlatList
                         data={friendsProfiles}
@@ -157,18 +161,22 @@ const FriendsScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+    },
+    title: {
+        fontSize: 24,
+        marginVertical: 30,
+        alignSelf: 'center',
     },
     flatListContainer: {
-        //marginTop: 30,
         justifyContent: 'center',
-        padding: 20,
+        paddingHorizontal: 20,
 
     },
     noFriendsText: {
         textAlign: 'center',
-        fontSize: 20
-    }
+        fontSize: 20,
+    },
 });
 
 export default FriendsScreen;

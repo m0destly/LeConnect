@@ -39,6 +39,7 @@ const MainTabNavigator = (navigation) => {
             <MaterialCommunityIcons name="account" size={size} color={color} />
           ),
         }}
+        
       />
       <Tab.Screen
         name="Friends"

@@ -1,14 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import {
-  View, Text, StyleSheet, TextInput,
-  TouchableOpacity, ScrollView, Alert, Linking, Platform, LogBox
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput,  ScrollView, Alert, Linking, Platform, LogBox } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 
-const CreateEventsScreen = ({ navigation }) => {
+const CreateEventsScreen = () => {
 
   const { user } = useContext(UserContext);
   const [title, setTitle] = useState('');
@@ -50,15 +48,16 @@ const CreateEventsScreen = ({ navigation }) => {
       });
       Alert.alert("Success", "Event created successfully!");
       resetEvents();
-      //navigation.goBack(); // Navigate back after successful creation
     } catch (error: any) {
       Alert.alert("Error", "Failed to create event: " + error.message);
     }
   };
 
   const sendToBackEnd = async () => {
-    if (title.trim().length == 0 ||
-      value.length == 0 || location.trim().length == 0) {
+    if (title.trim().length === 0 ||
+      value.length === 0 || 
+      location.trim().length === 0 ||
+      description.trim().length === 0) {
       Alert.alert("Error", "Do not leave any fields empty");
     } else {
       createEvents();
@@ -123,9 +122,15 @@ const CreateEventsScreen = ({ navigation }) => {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Date & Time</Text>
-          <TouchableOpacity style={styles.dateButton} onPress={showDatePicker}>
-            <Text style={styles.dateButtonText}>Pick Date & Time</Text>
-          </TouchableOpacity>
+
+          <Button
+            onPress={showDatePicker}
+            buttonStyle={{ borderRadius: 30 }}
+            title='Pick Date and Time'
+            titleStyle={{ marginHorizontal: 5 }}
+            icon={<Icon name="edit-calendar" type="material" size={20} color="white" />}
+          />
+
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="datetime"
@@ -135,26 +140,42 @@ const CreateEventsScreen = ({ navigation }) => {
             }}
             onCancel={hideDatePicker}
           />
+
           <Text style={styles.selectedDateText}>Selected: {selectedDate.toString().substring(0, 21)}</Text>
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Location</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, styles.inputLocation]}
             onChangeText={setLocation}
             value={location}
             placeholder='Paste location from Maps here...'
+            maxLength={150}
+            multiline={true}
+            textAlignVertical='top'
           />
-          <TouchableOpacity style={styles.dateButton} onPress={openMaps}>
-            <Text style={styles.dateButtonText}>Open {Platform.OS === 'android' ? 'Google Maps' : 'Apple Maps'}</Text>
-          </TouchableOpacity>
+
+          <Button
+            title={Platform.OS === 'android' ? 'Open Google Maps' : 'Open Apple Maps'}
+            onPress={openMaps}
+            icon={<Icon
+              name='map-search-outline'
+              type='material-community'
+              color='white' />
+            }
+            titleStyle={{ marginHorizontal: 5 }}
+            buttonStyle={{
+              borderRadius: 30,
+              marginTop: 10,
+            }}
+          />
         </View>
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>
           <TextInput
-            style={[styles.input, styles.descriptionInput]}
+            style={[styles.input, styles.inputDescription]}
             onChangeText={setDescription}
             value={description}
             placeholder="Enter description here..."
@@ -165,9 +186,13 @@ const CreateEventsScreen = ({ navigation }) => {
           />
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={sendToBackEnd}>
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
+        <Button
+          onPress={sendToBackEnd}
+          buttonStyle={{ borderRadius: 30, backgroundColor: 'green' }}
+          title='Submit'
+          titleStyle={{ marginHorizontal: 5 }}
+          icon={<Icon name="upload" type="material" size={20} color="white" />}
+        />
       </View>
     </ScrollView>
   );
@@ -206,37 +231,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
   },
-  dateButton: {
-    backgroundColor: '#3498DB',
-    padding: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  dateButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-  },
   selectedDateText: {
     marginTop: 8,
     fontSize: 16,
     color: '#333',
   },
-  descriptionInput: {
-    height: 170,
-    textAlignVertical: 'top',
+  inputLocation: {
+    height: 80,
   },
-  submitButton: {
-    backgroundColor: '#2ECC71',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+  inputDescription: {
+    height: 200,
+  }
 });
 
 export default CreateEventsScreen;

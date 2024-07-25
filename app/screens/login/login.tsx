@@ -13,12 +13,10 @@ const LoginScreen = ({ navigation }) => {
   const passwordRef = useRef();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const auth = FIREBASE_AUTH;
 
   const handleLogin = async () => {
     // Implement your login logic here
-    setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, username, password);
       const currUser = response.user;
@@ -54,12 +52,7 @@ const LoginScreen = ({ navigation }) => {
       } else {
         Alert.alert('Error', 'An unexpected error occurred. Please try again.');
       }
-    } finally {
-      setLoading(false);
-
     }
-    // Example: You might want to send the login credentials to your backend server for authentication
-    // third case: successful, transit to static home page
   };
 
   const resetLogin = () => {

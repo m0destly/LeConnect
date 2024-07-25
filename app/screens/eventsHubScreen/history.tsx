@@ -1,16 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity } from 'react-native';
-import { Icon } from 'react-native-elements'
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import UserContext from '@/app/userContext';
 import firebase from 'firebase/compat';
-import LoginScreen from '../login/login';
 import { EventData, Event } from '@/app/types.d';
-import EventPage from '../home/eventPage';
-import useTailwind from 'tailwind-rn';
 
 const EventsHubScreen = ({ navigation }) => {
   
-  const { user, clearUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [eachEvent, setEachEvent] = useState([]);
   const [joinedEvent, setJoinedEvent] = useState([]);
 
@@ -18,7 +14,6 @@ const EventsHubScreen = ({ navigation }) => {
   const toEvent = (item: EventData) => {
     navigation.navigate('EventPage', {
       Title: item.Title,
-      Category: item.Category,
       Time: item.Time.toDate().toString().substring(0, 21),
       id: item.id,
       Description: item.Description,
@@ -40,7 +35,7 @@ const EventsHubScreen = ({ navigation }) => {
 
   useEffect(() => {
     const myEvents = async () => {
-      await firebase
+      firebase
         .firestore()
         .collection('events')
         .where('Creator', "==", user.id)
@@ -60,7 +55,7 @@ const EventsHubScreen = ({ navigation }) => {
     };
 
     const joinedEvents = async () => {
-      await firebase
+      firebase
         .firestore()
         .collection('events')
         .where('Participants', "array-contains", user.id)
@@ -85,19 +80,18 @@ const EventsHubScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Events Created By Me</Text>
       <View style={styles.flatListContainer}>
+        <Text style={styles.title}>Events Created By Me</Text>
         <FlatList
-          style={styles.flatList}
           data={eachEvent}
           renderItem={renderEvent}
 
         />
       </View>
-      <Text style={styles.title}>Events Joined</Text>
+      
       <View style={styles.flatListContainer}>
+        <Text style={styles.title}>Events Joined</Text>
         <FlatList
-          style={styles.flatList}
           data={joinedEvent}
           renderItem={renderEvent}
         />
@@ -114,13 +108,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     textAlign: 'center',
-    marginVertical: 16,
+    marginBottom: 10,
   },
   flatListContainer: {
-    height: '40%',
-  },
-  flatList: {
-    height: 300,
+    flex: 1,
   },
 });
 

@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import firebase from 'firebase/compat/app';
-import UserContext from '@/app/userContext';
 import { EventData, Event } from '@/app/types.d';
 
 const HomeScreen = ({ navigation }) => {
@@ -13,7 +12,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        await firebase
+        firebase
           .firestore()
           .collection('events') 
           .where('Time', '>=', new Date())
@@ -44,7 +43,6 @@ const HomeScreen = ({ navigation }) => {
     // enter event page: see user created + description
     navigation.navigate('EventPage', {
       Title: item.Title,
-      Category: item.Category,
       Time: item.Time.toDate().toString().substring(0, 21),
       id: item.id,
       Description: item.Description,
@@ -111,13 +109,7 @@ const styles = StyleSheet.create({
   pickerContainer: {
     justifyContent: 'center',
     width: 160,
-    height: 10
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
+    height: 10,
   },
 });
 

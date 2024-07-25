@@ -1,13 +1,12 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Alert, StyleSheet, ScrollView, Image } from 'react-native';
 import firebase from 'firebase/compat';
-import UserContext from '@/app/userContext';
 import ModalScreen from './modal';
 import { FIREBASE_STORAGE } from '@/FirebaseConfig';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Button, Icon } from 'react-native-elements';
 
 const UpdateProfileScreen = ({ route, navigation }) => {
-  const { user } = useContext(UserContext);
   const { Name, Age, Gender, Contact, Bio, DocID, Pic, PicName } = route.params;
 
   const [name, setName] = useState(Name);
@@ -111,6 +110,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           value={name}
           onChangeText={setName}
           placeholder="Enter your name"
+          maxLength={50}
         />
 
         <Text style={styles.label}>Age:</Text>
@@ -146,6 +146,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           multiline={true}
           keyboardType='default'
           textAlignVertical='top'
+          maxLength={100}
         />
 
         <Text style={styles.label}>Bio:</Text>
@@ -157,6 +158,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           placeholder="Tell others about yourself"
           keyboardType='default'
           textAlignVertical='top'
+          maxLength={200}
         />
 
         <Text style={styles.label}>Profile Picture:</Text>
@@ -165,14 +167,22 @@ const UpdateProfileScreen = ({ route, navigation }) => {
           style={styles.image}
           source={{ uri: image }}
         />
+        
+        <Button
+          onPress={showModal}
+          buttonStyle={{ borderRadius: 30, marginBottom: 5 }}
+          title='Change Picture'
+          titleStyle={{ marginHorizontal: 5 }}
+          icon={<Icon name="perm-media" type="material" size={20} color="white" />}
+        />
 
-        <TouchableOpacity style={styles.changePicButton} onPress={showModal}>
-          <Text style={styles.buttonText}>Change Picture</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.updateButton} onPress={handlePress}>
-          <Text style={styles.buttonText}>Update Profile</Text>
-        </TouchableOpacity>
+        <Button
+          onPress={handlePress}
+          buttonStyle={{ borderRadius: 30, backgroundColor: 'green' }}
+          title='Update Profile'
+          titleStyle={{ marginHorizontal: 5}}
+          icon={<Icon name="update" type="material" size={20} color="white" />}
+        />
 
         <ModalScreen
           visible={isVisible}
@@ -236,25 +246,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     borderColor: '#007BFF',
     borderWidth: 2,
-  },
-  changePicButton: {
-    backgroundColor: '#007BFF',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  updateButton: {
-    backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   dropdown: {
     borderWidth: 1,

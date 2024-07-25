@@ -101,7 +101,7 @@ const eventProfileStyles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 10,
     alignSelf: 'center',
-    color: 'white',
+    color: 'black',
   },
   profilePic: {
     width: 25,

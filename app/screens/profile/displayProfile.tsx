@@ -1,11 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Alert, ScrollView, Text, StyleSheet, Image, Button, TouchableOpacity, TextInput } from 'react-native';
+import { View, Alert, ScrollView, Text, StyleSheet, Image } from 'react-native';
+import { Button, Icon } from 'react-native-elements';
 import UserContext from '@/app/userContext';
 import firebase from 'firebase/compat';
 
 const DisplayProfileScreen = ({ navigation, route }) => {
     const { user } = useContext(UserContext);
-    const { Name, Age, Gender, Contact, Bio, User, Pic, PicName } = route.params;
+    const { Name, Age, Gender, Contact, Bio, User, Pic } = route.params;
     const [friendMessage, setFriendMessage] = useState('Add Friend');
     const [isFriend, setIsFriend] = useState(false);
     const [disable, setDisable] = useState(false);
@@ -165,16 +166,17 @@ const DisplayProfileScreen = ({ navigation, route }) => {
                     </View>
                     <Button
                         title={friendMessage}
+                        titleStyle={{marginHorizontal: 5}}
                         onPress={() => sendReq(user.id, User)}
+                        buttonStyle={{borderRadius: 30}}
+                        icon={friendMessage === 'Friend request pending' 
+                            ? <Icon name='hourglass-full' type='material' color='white' size={20}/>
+                            : friendMessage === 'Already friends' 
+                            ? <Icon name='people' type='material' color='white' size={20}></Icon>
+                            : <Icon name='person-add' type='material' color='white' size={20}/>}
                         disabled={disable}
                     />
                 </View>
-                {/* {!isFriend
-                    ?
-                    <View>
-                        <Text>Add {Name} as friend to view his/her contact</Text>
-                    </View>
-                    : <></>} */}
             </View>
         </ScrollView>
     );
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
     },
     notFriendText: {
         fontSize: 16,
-        fontStyle: 'italic'
+        fontStyle: 'italic',
     },
     image: {
         width: 150,

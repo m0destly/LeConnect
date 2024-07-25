@@ -6,11 +6,10 @@ import UserContext from '@/app/userContext';
 
 const RegisterScreen = ({ navigation }) => {
   const { saveUser } = useContext(UserContext);
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const auth = FIREBASE_AUTH;
 
   const handleSignUp = async () => {
@@ -19,7 +18,6 @@ const RegisterScreen = ({ navigation }) => {
       return;
     }
 
-    setLoading(true);
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log(response);
@@ -39,15 +37,13 @@ const RegisterScreen = ({ navigation }) => {
         Alert.alert('Error', 'Email already exists.');
       } else if (error.code === 'auth/weak-password') {
         Alert.alert('Error', 'Please enter a password of at least 6 characters.');
-      } else if (error.code === 'auth/missing-password' || 
-                error.code === 'auth/missing-email' ||
-                error.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/missing-password' ||
+        error.code === 'auth/missing-email' ||
+        error.code === 'auth/invalid-email') {
         Alert.alert('Error', 'Please enter a valid email/password.');
       } else {
         Alert.alert('Error', 'An unexpected error occurred. Please try again.');
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -89,12 +85,13 @@ const RegisterScreen = ({ navigation }) => {
         <Text style={styles.signUpText}>Get Connected!</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.loginBtn} onPress={handleGoToLogin}>
-        <Text style={styles.loginText1}>
-          Already have an account?{' '}
+      <View style={styles.loginContainer}>
+        <Text style={styles.loginText1}>Already have an account?{' '}</Text>
+        <TouchableOpacity style={styles.loginBtn} onPress={handleGoToLogin}>
           <Text style={styles.loginText2}>Login here!</Text>
-        </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 };
@@ -137,6 +134,10 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     color: 'white',
+  },
+  loginContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
   },
   loginBtn: {
     backgroundColor: 'white',
