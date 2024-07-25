@@ -180,9 +180,9 @@ const NewProfileScreen = ({ navigation }) => {
         <Button
           onPress={handlePress}
           buttonStyle={{ borderRadius: 30, backgroundColor: 'green' }}
-          title='Update Profile'
+          title='Create Profile'
           titleStyle={{ marginHorizontal: 5}}
-          icon={<Icon name="update" type="material" size={20} color="white" />}
+          icon={<Icon name="add" type="material" size={20} color="white" />}
         />
 
         <ModalScreen
