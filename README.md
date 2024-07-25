@@ -2,48 +2,40 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Download on PC and Test LeConnect
+## About LeConnect
 
-1. Install required dependencies
+LeConnect is a social media application that aims to help connect students from the National University of Singapore (NUS) without hassel. We want everyone to feel comfortable while being able to meet new people by engaging in group activities, be it simple lunch, studying together, or sporting activities. Start creating and joining events with LeConnect today!
+
+## Test through Emulators on PC
+
+1. Download emulator of choice 
+- [Android Studio](https://developer.android.com/studio)
+- [Xcode](https://apps.apple.com/us/app/xcode/id497799835)
+
+2. Clone the Git repository
+- [Guide](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+
+3. Install the required dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+4. Launch LeConnect in terminal
 
    ```bash
-    npx expo start
+   npx expo start
    ```
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Test through Expo Go App on Mobile Device
+## Test through Expo Go App on Mobile Device (Recommended)
 
 1. Install Expo Go on the [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent&pcampaignid=web_share) or [Apple App Store](https://apps.apple.com/us/app/expo-go/id982107779)
 
 2. On your mobile device, click [here](exp://u.expo.dev/560b3be0-c28c-4d81-8765-e0b17ae89767/group/34ebe5e4-5201-49b3-addd-cdee050fc599) to open the link or scan the QR code below
+
 ![screenshot](assets/images/QRcode.png)
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Test Accounts
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Username: `test@gmail.com`
+- Password: `password`
