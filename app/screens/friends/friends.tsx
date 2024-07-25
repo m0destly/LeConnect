@@ -10,47 +10,95 @@ const FriendsScreen = ({ navigation }) => {
 
     const { user } = useContext(UserContext);
     const [friendsProfiles, setFriendsProfiles] = useState(new Array<any>);
+    const [friendRequests, setFriendRequests] = useState(new Array<any>);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        firebase.firestore()
-            .collection('users')
-            .where('User', '==', user.id)
-            .onSnapshot(querySnapshot => {
-                const promises = []; // Array to store all promises for Firebase queries
-                querySnapshot.forEach(documentSnapshot => {
-                    // console.log("Array from backend: ", documentSnapshot.data().Friends);
-                    // for loop in here
-                    for (const friends of documentSnapshot.data().Friends) {
-                        const friendQuery = firebase.firestore()
-                            .collection('users')
-                            .where('User', '==', friends)
-                            .get();
-                        promises.push(friendQuery);
-                    }
-
-                })
-                // Resolve all promises once all Firestore queries are complete
-                Promise.all(promises)
-                    .then(querySnapshots => {
-                        let profileArray = new Array<any>();
-                        querySnapshots.forEach(querySnapshot => {
-                            querySnapshot.forEach(documentSnapshot => {
-                                profileArray.push(documentSnapshot.data());
-                                // console.log("DocumentSnapshot: ", documentSnapshot.data());
-                            });
+        try {
+            firebase.firestore()
+                .collection('requests')
+                .where('Receiver', '==', user.id)
+                .onSnapshot(querySnapshot => {
+                    const promises = querySnapshot.docs.map(documentSnapshot => {
+                        const currSender = documentSnapshot.data().Sender;
+                        const docID = documentSnapshot.id;
+                        return obtainUserData(currSender).then(friend => {
+                            return {
+                                id: docID,
+                                ...friend,
+                            };
                         });
-
-                        // Now profileArray should be populated with all friend profiles
-                        setFriendsProfiles(profileArray);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching friends profiles:', error);
                     });
-            });
-        // console.log("friendsProfiles ", friendsProfiles);
+
+                    Promise.all(promises)
+                        .then(results => {
+                            setFriendRequests(results);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching friend requests:', error);
+                        });
+                });
+
+        } catch (error: any) {
+            Alert.alert('Error, ' + error.message);
+        } finally {
+            firebase.firestore()
+                .collection('users')
+                .where('User', '==', user.id)
+                .onSnapshot(querySnapshot => {
+                    const promises = []; // Array to store all promises for Firebase queries
+                    querySnapshot.forEach(documentSnapshot => {
+                        // console.log("Array from backend: ", documentSnapshot.data().Friends);
+                        // for loop in here
+                        for (const friends of documentSnapshot.data().Friends) {
+                            const friendQuery = firebase.firestore()
+                                .collection('users')
+                                .where('User', '==', friends)
+                                .get();
+                            promises.push(friendQuery);
+                        }
+
+                    })
+                    // Resolve all promises once all Firestore queries are complete
+                    Promise.all(promises)
+                        .then(querySnapshots => {
+                            let profileArray = new Array<any>();
+                            querySnapshots.forEach(querySnapshot => {
+                                querySnapshot.forEach(documentSnapshot => {
+                                    profileArray.push(documentSnapshot.data());
+                                    // console.log("DocumentSnapshot: ", documentSnapshot.data());
+                                });
+                            });
+
+                            // Now profileArray should be populated with all friend profiles
+                            setFriendsProfiles(profileArray);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching friends profiles:', error);
+                        });
+                });
+        }
 
     }, []);
+
+    // a function that gets the user data from back end
+    const obtainUserData = async (id: String) => {
+        try {
+            let tempData = new Object;
+            const snapshot = await firebase.firestore()
+                .collection('users')
+                .where('User', '==', id)
+                .get();
+            snapshot.forEach(documentSnapshot => {
+                tempData = documentSnapshot.data();
+            })
+            //console.log("TempData: " + tempData);
+            return tempData;
+        } catch (error: any) {
+            console.log("Error fetching user data: ", error.message);
+            return null;
+        }
+    }
 
     // need a onPress to view the friends request, launch modal?
     const showRequests = () => {
@@ -86,7 +134,7 @@ const FriendsScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Button
-                title="Manage Friend Requests"
+                title={`  Pending Friend Requests: ${friendRequests.length}`}
                 onPress={showRequests}
                 icon={<Icon name="group-add" type="material" size={20} color="white" />}
             />
@@ -94,15 +142,14 @@ const FriendsScreen = ({ navigation }) => {
                 visible={isVisible}
                 onClose={hideRequests}
                 navigation={navigation}
-                
             />
             <View style={styles.flatListContainer}>
-            {friendsProfiles.length !== 0 ?
-                <FlatList
-                    data={friendsProfiles}
-                    renderItem={renderEventProfile}
-                /> : <Text style={styles.noFriendsText}>No friends yet...</Text>
-            }
+                {friendsProfiles.length !== 0 ?
+                    <FlatList
+                        data={friendsProfiles}
+                        renderItem={renderEventProfile}
+                    /> : <Text style={styles.noFriendsText}>No friends yet...</Text>
+                }
             </View>
         </View>
     )
@@ -113,9 +160,10 @@ const styles = StyleSheet.create({
         flex: 1
     },
     flatListContainer: {
-        marginTop: 30,
+        //marginTop: 30,
         justifyContent: 'center',
-        
+        padding: 20,
+
     },
     noFriendsText: {
         textAlign: 'center',
