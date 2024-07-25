@@ -213,7 +213,8 @@ const EventPage = ({ route, navigation }) => {
             }
             titleStyle={{ marginHorizontal: 5 }}
             buttonStyle={{
-              borderRadius: 30}}
+              borderRadius: 30
+            }}
           />
 
         </View>
