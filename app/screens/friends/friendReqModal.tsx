@@ -10,47 +10,99 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
 
     const { user } = useContext(UserContext);
     const [friendRequests, setFriendRequests] = useState(new Array<any>());
+
     // use on snapshot to obtain requests where receiver is curr user
+    // useEffect(() => {
+    //     try {
+    //         firebase.firestore()
+    //             .collection('requests')
+    //             .where('Receiver', '==', user.id)
+    //             .onSnapshot(querySnapshot => {
+    //                 const friendRequestsFromDB = new Array<any>();
+    //                 querySnapshot.forEach(documentSnapshot => {
+    //                     const currSender = documentSnapshot.data().Sender;
+    //                     const docID = documentSnapshot.id;
+    //                     console.log(currSender);
+    //                     console.log(docID);
+    //                     obtainUserData(currSender).then(friend => {
+    //                         console.log("Profile " + friend);
+    //                         friendRequestsFromDB.push({
+    //                             id: docID,
+    //                             ...friend,
+    //                         });
+    //                     });
+    //                 });
+    //                 setFriendRequests(friendRequestsFromDB);
+    //             });
+
+    //     } catch (error: any) {
+    //         Alert.alert('Error, ' + error.message);
+    //     }
+    // }, [])
+
+    // // a function that gets the user data from back end
+    // const obtainUserData = async (id: String) => {
+    //     let tempData = new Object;
+    //     const snapshot = await firebase.firestore()
+    //         .collection('users')
+    //         .where('User', '==', id)
+    //         .get();
+    //     snapshot.forEach(documentSnapshot => {
+    //         tempData = documentSnapshot.data();
+    //     })
+    //     console.log("TempData: " + tempData);
+    //     return tempData;
+    // }
+
     useEffect(() => {
         try {
             firebase.firestore()
                 .collection('requests')
                 .where('Receiver', '==', user.id)
                 .onSnapshot(querySnapshot => {
-                    const friendRequestsFromDB = new Array<any>();
-                    querySnapshot.forEach(documentSnapshot => {
+                    const promises = querySnapshot.docs.map(documentSnapshot => {
                         const currSender = documentSnapshot.data().Sender;
                         const docID = documentSnapshot.id;
-                        console.log(currSender);
-                        console.log(docID);
-                        obtainUserData(currSender).then(friend => {
-                            console.log("Profile " + friend);
-                            friendRequestsFromDB.push({
+                        return obtainUserData(currSender).then(friend => {
+                            return {
                                 id: docID,
                                 ...friend,
-                            });
+                            };
                         });
                     });
-                    setFriendRequests(friendRequestsFromDB);
+
+                    Promise.all(promises)
+                        .then(results => {
+                            setFriendRequests(results);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching friend requests:', error);
+                        });
                 });
 
         } catch (error: any) {
             Alert.alert('Error, ' + error.message);
         }
+
     }, [])
 
     // a function that gets the user data from back end
     const obtainUserData = async (id: String) => {
-        let tempData = new Object;
-        const snapshot = await firebase.firestore()
-            .collection('users')
-            .where('User', '==', id)
-            .get();
-        snapshot.forEach(documentSnapshot => {
-            tempData = documentSnapshot.data();
-        })
-        console.log("TempData: " + tempData);
-        return tempData;
+        try {
+            let tempData = new Object;
+            const snapshot = await firebase.firestore()
+                .collection('users')
+                .where('User', '==', id)
+                .get();
+            snapshot.forEach(documentSnapshot => {
+                tempData = documentSnapshot.data();
+            })
+            //console.log("TempData: " + tempData);
+            return tempData;
+        } catch (error: any) {
+            console.log("Error fetching user data: ", error.message);
+            return null;
+        }
     }
 
     const acceptFriendRequest = async (sender: String, receiver: String, docID: string) => {
@@ -69,6 +121,7 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
         addFriend(sender, receiver);
         addFriend(receiver, sender);
         Alert.alert("Friend request accepted");
+
     }
 
     const addFriend = async (sender: String, receiver: String) => {
@@ -100,7 +153,7 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
         }
     };
 
-    // removs from requests colleection
+    // removes from requests colleection
     const rejectFriendRequest = async (docID: string) => {
         await firebase.firestore()
             .collection('requests')
@@ -167,11 +220,18 @@ const FriendRequestModalScreen = ({ navigation, visible, onClose }) => {
             <View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
                     <Text style={styles.modalTitle}>My Friend Requests</Text>
-                    <FlatList
-                        data={friendRequests}
-                        renderItem={renderRequest}
-                    />
-                    <TouchableOpacity 
+                    {friendRequests.length !== 0 ?
+                        <FlatList
+                            data={friendRequests}
+                            renderItem={renderRequest}
+                            initialNumToRender={5}
+                            style={{ flex: 1 }}
+                        /> :
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <Text style={{ fontSize: 18 }}>No requests currently...</Text>
+                        </View>
+                    }
+                    <TouchableOpacity
                         style={styles.modalCancel}
                         onPress={onClose}>
                         <Text style={styles.modalCancelText}>Cancel</Text>
@@ -216,14 +276,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         borderWidth: 1,
+        width: '100%',
+        height: 70,
+        alignSelf: 'center',
+        backgroundColor: 'yellow',
     },
     requestContainer: {
         padding: 5,
         flexDirection: 'row',
+        flex: 2,
     },
     requestButtonContainer: {
         justifyContent: 'space-evenly',
+        alignSelf: 'center',
         flexDirection: 'row',
+        flex: 1,
     },
     requestName: {
         fontWeight: 'bold',

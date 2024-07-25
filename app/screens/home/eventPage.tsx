@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Button, ImageBackground, Alert, ScrollView, FlatList, Platform, Linking } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Button, Modal, Alert, ScrollView, FlatList, Platform, Linking } from 'react-native';
 import firebase from 'firebase/compat/app';
 import UserContext from '@/app/userContext';
 import { EventProfile, EventProfileData } from '@/app/types.d';
@@ -14,9 +14,21 @@ const EventPage = ({ route, navigation }) => {
   const [clean, setClean] = useState('');
   const [participants, setParticipants] = useState(new Array<any>());
   const [creatorFields, setCreatorFields] = useState(new Object);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     try {
+      firebase
+        .firestore()
+        .collection('users')
+        .where('User', '==', Creator)
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(documentSnapshot => {
+            setCreatorFields(documentSnapshot.data());
+          })
+        });
+
       firebase
         .firestore()
         .collection('users')
@@ -31,20 +43,11 @@ const EventPage = ({ route, navigation }) => {
           setParticipants(participantsData);
         });
 
-      firebase
-        .firestore()
-        .collection('users')
-        .where('User', '==', Creator)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(documentSnapshot => {
-            setCreatorFields(documentSnapshot.data());
-          })
-        });
     } catch (error: any) {
       if (error.code !== 'invalid-argument') {
         Alert.alert('Error, ' + error.message);
       }
+
     } finally {
       Creator === user.id ? setIsCreator(true) : setIsCreator(false);
       // query if participant has joined
@@ -145,6 +148,26 @@ const EventPage = ({ route, navigation }) => {
       Pic: item.Pic,
       PicName: item.PicName,
     })
+  };
+
+  const handleConfirm = async () => {
+    await firebase
+      .firestore()
+      .collection('events')
+      .doc(id)
+      .delete()
+      .then(() => {
+        setIsVisible(false);
+        navigation.pop();
+        Alert.alert('Success', 'Event deleted successfully');
+      })
+      .catch(
+        (err) => Alert.alert('Error', `Failed to delete event: ${err}`)
+      )
+  }
+
+  const handleReject = () => {
+    setIsVisible(false);
   }
 
   return (
@@ -202,9 +225,8 @@ const EventPage = ({ route, navigation }) => {
 
         <View style={styles.footer}>
           <Button
-            title={canJoin ? 'Join Event!' : 'Leave Event!'}
-            onPress={canJoin ? joinEvent : unjoinEvent}
-            disabled={isCreator}
+            title={isCreator ? 'Remove Event' : (canJoin ? 'Join Event!' : 'Leave Event!')}
+            onPress={isCreator ? () => setIsVisible(true) : (canJoin ? joinEvent : unjoinEvent)}
           />
         </View>
 
@@ -218,6 +240,28 @@ const EventPage = ({ route, navigation }) => {
             Be the first to join this event!
           </Text>
         }
+
+        <Modal
+          transparent={true}
+          visible={isVisible}
+          onRequestClose={() => setIsVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>Are you sure you want to delete this event?</Text>
+
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={handleConfirm}>
+                  <Text style={styles.buttonText}>Yes</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button} onPress={handleReject}>
+                  <Text style={styles.buttonText}>No</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
       </View>
     </View>
@@ -289,7 +333,38 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     flexDirection: 'column',
-  }
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  button: {
+    padding: 10,
+    backgroundColor: '#2196F3',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+  },
 });
 
 export default EventPage;

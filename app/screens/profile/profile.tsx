@@ -34,10 +34,10 @@ const ProfileScreen = ({ navigation, route }) => {
         .collection('users')
         .where('User', '==', user.id)
         .onSnapshot(querySnapshot => {
-            querySnapshot.forEach(documentSnapshot => {
-              getDocID(documentSnapshot.id);
-              getUserData(documentSnapshot.data());
-            });
+          querySnapshot.forEach(documentSnapshot => {
+            getDocID(documentSnapshot.id);
+            getUserData(documentSnapshot.data());
+          });
         });
     } catch (error: any) {
       Alert.alert("Error", error.message);
@@ -75,15 +75,17 @@ const ProfileScreen = ({ navigation, route }) => {
       setMessaage('Passwords do not match / Cannot be empty');
     }
   }
-  
+
   useEffect(() => {
     retrieveProfile();
   }, []);
-  
+
   return (
-    
-      <ScrollView contentContainerStyle={styles.scrollViewContents}>
-        <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollViewContents}>
+      <View style={styles.container}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>My Profile</Text>
+        </View>
         <View style={styles.profileContainer}>
           <View style={styles.profilePic}>
             <View style={styles.profileDetails}>
@@ -138,7 +140,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 placeholder="Confirm Password"
                 onChangeText={setConfirmPW}
                 secureTextEntry={true}
-                
+
               />
               <Button
                 title='Confirm'
@@ -154,8 +156,7 @@ const ProfileScreen = ({ navigation, route }) => {
           )}
         </View>
       </View>
-      </ScrollView>
-
+    </ScrollView>
   );
 };
 
@@ -163,10 +164,17 @@ const styles = StyleSheet.create({
   scrollViewContents: {
     flexGrow: 1,
   },
+  title: {
+    fontSize: 24,
+  },
+  titleContainer: {
+    flex: 0.5,
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    //justifyContent: 'center',
     backgroundColor: '#f0f0f0',
   },
   profileContainer: {
@@ -182,10 +190,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileDetails: {
-    flex: 1, 
+    flex: 1,
   },
   profilePic: {
-    flexDirection:'row',
+    flexDirection: 'row',
     alignItems: 'center',
   },
   profileField: {
