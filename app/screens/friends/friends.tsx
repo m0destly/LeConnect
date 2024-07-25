@@ -144,6 +144,7 @@ const FriendsScreen = ({ navigation }) => {
                     icon={<Icon name="group-add" type="material" size={20} color="white" />}
                     buttonStyle={{
                         justifyContent: 'center',
+                        borderRadius: 30,
                         marginBottom: 10,
                     }}
                 />
@@ -152,7 +153,10 @@ const FriendsScreen = ({ navigation }) => {
                     <FlatList
                         data={friendsProfiles}
                         renderItem={renderEventProfile}
-                    /> : <Text style={styles.noFriendsText}>No friends yet...</Text>
+                    /> : 
+                    <View style={styles.noFriendsContainer}>
+                        <Text style={styles.noFriendsText}>No friends yet...</Text>
+                    </View>
                 }
             </View>
         </View>
@@ -169,9 +173,12 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     flatListContainer: {
-        justifyContent: 'center',
+        flex: 1,
         paddingHorizontal: 20,
-
+    },
+    noFriendsContainer: {
+        flex: 1,
+        justifyContent: 'center',
     },
     noFriendsText: {
         textAlign: 'center',
