@@ -1,7 +1,5 @@
 # Welcome to LeConnect
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
 ## About LeConnect
 
 LeConnect is a social media application that aims to help connect students from the National University of Singapore (NUS) without hassel. We want everyone to feel comfortable while being able to meet new people by engaging in group activities, be it simple lunch, studying together, or sporting activities. Start creating and joining events with LeConnect today!
@@ -35,7 +33,7 @@ LeConnect is a social media application that aims to help connect students from 
 
 ![screenshot](assets/images/QRcode.png)
 
-## Test Accounts
+## Test Account
 
 - Username: `test@gmail.com`
 - Password: `password`
