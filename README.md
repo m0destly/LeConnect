@@ -2,7 +2,7 @@
 
 ## About LeConnect
 
-LeConnect is a social media application that aims to help connect students from the National University of Singapore (NUS) without hassel. We want everyone to feel comfortable while being able to meet new people by engaging in group activities, be it simple lunch, studying together, or sporting activities. Start creating and joining events with LeConnect today!
+LeConnect is a social media application that aims to help connect students from the National University of Singapore (NUS) without hassle. We want everyone to feel comfortable while being able to meet new people by engaging in group activities, be it simple lunch, studying together, or sporting activities. Start creating and joining events with LeConnect today!
 
 ## Test through Emulators on PC
 
