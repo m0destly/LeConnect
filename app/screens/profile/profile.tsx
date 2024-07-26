@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     paddingTop: 10,
-    width: '80%'
+    width: '80%',
   },
   logout: {
     backgroundColor: 'red',
