@@ -52,20 +52,20 @@ const ProfileScreen = ({ navigation, route }) => {
           setConfirmPW('');
           setNewPassword('');
           setIsPressed(false);
-          Alert.alert('Update successful', 'Your password has been changed');
+          Alert.alert('Update successful', 'Your password has been changed.');
         })
         .catch((error) => {
           if (error.code === 'auth/weak-password') {
-            setMessage('Password should be at least 6 characters');
+            setMessage('Password should be at least 6 characters.');
           } else {
             setMessage(error.message);
           };
         })
 
     } else if (newPassword === '' || confirmPW === '') {
-      setMessage('Passwords cannot be empty');
+      setMessage('Passwords cannot be empty.');
     } else {
-      setMessage('Passwords do not match');
+      setMessage('Passwords do not match.');
     }
   }
 
