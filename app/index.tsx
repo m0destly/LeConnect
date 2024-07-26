@@ -22,7 +22,7 @@ const MyStack = () => {
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
           <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{headerTitle: 'Reset Password'}} />
-          <Stack.Screen name="LeConnect" component={MainTabNavigator} />
+          <Stack.Screen name="LeConnect" component={MainTabNavigator} options={{headerBackVisible: false}}/>
           <Stack.Screen name="EventPage" component={EventPage} options={{headerTitle: 'Event Page'}} />
           <Stack.Screen name="UpdateProfile" component={UpdateProfileScreen} options={{headerTitle: 'Update Profile'}} />
           <Stack.Screen name="Register" component={RegisterScreen} />

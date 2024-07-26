@@ -17,7 +17,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
   const retrieveProfile = async () => {
     try {
-      await firebase.firestore()
+      firebase.firestore()
         .collection('users')
         .where('User', '==', user.id)
         .onSnapshot(querySnapshot => {
@@ -55,12 +55,27 @@ const ProfileScreen = ({ navigation, route }) => {
           Alert.alert('Update successful', 'Your password has been changed');
         })
         .catch((error) => {
-          setMessage(error.message);
+          if (error.code === 'auth/weak-password') {
+            setMessage('Password should be at least 6 characters');
+          } else {
+            setMessage(error.message);
+          };
         })
 
+    } else if (newPassword === '' || confirmPW === '') {
+      setMessage('Passwords cannot be empty');
     } else {
-      setMessage('Passwords do not match / Cannot be empty');
+      setMessage('Passwords do not match');
     }
+  }
+
+  const openPassword = () => {
+    setIsPressed(true);
+  }
+
+  const closePassword = () => {
+    setMessage('');
+    setIsPressed(false);
   }
 
   useEffect(() => {
@@ -112,7 +127,7 @@ const ProfileScreen = ({ navigation, route }) => {
         <Button
           title='Change Password'
           titleStyle={{marginHorizontal: 5}}
-          onPress={() => setIsPressed(!isPressed)}
+          onPress={() => isPressed ? closePassword() : openPassword()}
           buttonStyle={styles.changePassword}
           icon={<Icon name="lock-reset" type="material" size={20} color="white"/>}
         />
@@ -144,11 +159,18 @@ const ProfileScreen = ({ navigation, route }) => {
             </View>
           )}
           {message && (
-            <View>
-              <Text> {message} </Text>
+            <View style={styles.messageContainer}>
+              <Text style={{textAlign: 'center'}}> {message} </Text>
             </View>
           )}
         </View>
+        <Button
+          title='Log Out'
+          titleStyle={{marginHorizontal: 5}}
+          onPress={() => navigation.popToTop()}
+          buttonStyle={styles.logout}
+          icon={<Icon name="logout" type="material" size={20} color="white"/>}
+        />
       </View>
     </ScrollView>
   );
@@ -204,11 +226,9 @@ const styles = StyleSheet.create({
     borderRadius: 75,
   },
   passwordContainer: {
-    padding: 20,
+    padding: 10,
   },
   changePassword: {
-    paddingVertical: 10,
-    paddingHorizontal: 50,
     alignItems: 'center',
     borderRadius: 30,
     marginTop: 30,
@@ -216,9 +236,8 @@ const styles = StyleSheet.create({
   },
   confirm: {
     backgroundColor: 'green',
-    paddingVertical: 10,
-    paddingHorizontal: 50,
     alignItems: 'center',
+    alignSelf: 'center',
     borderRadius: 30,
     marginTop: 20,
     width: 300,
@@ -226,6 +245,19 @@ const styles = StyleSheet.create({
   passwordInput: {
     fontSize: 20,
     padding: 5,
+  },
+  messageContainer: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    paddingTop: 10,
+    width: '80%'
+  },
+  logout: {
+    backgroundColor: 'red',
+    alignItems: 'center',
+    borderRadius: 30,
+    width: 300,
+    marginBottom: 30,
   }
 });
 

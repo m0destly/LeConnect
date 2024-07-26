@@ -62,7 +62,7 @@ const UpdateProfileScreen = ({ route, navigation }) => {
       bio.trim().length !== 0) {
       updateProfile();
     } else {
-      Alert.alert("Error", "You cannot leave any field empty");
+      Alert.alert("Error", "Please fill in all fields to proceed.");
     }
   }
 
