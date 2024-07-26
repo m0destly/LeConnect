@@ -7,7 +7,7 @@ import firebase from 'firebase/compat';
 const DisplayProfileScreen = ({ navigation, route }) => {
     const { user } = useContext(UserContext);
     const { Name, Age, Gender, Contact, Bio, User, Pic } = route.params;
-    const [friendMessage, setFriendMessage] = useState('Add Friend');
+    const [friendMessage, setFriendMessage] = useState('Add friend');
     const [isFriend, setIsFriend] = useState(false);
     const [disable, setDisable] = useState(false);
 
