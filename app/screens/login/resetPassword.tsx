@@ -10,10 +10,16 @@ const ResetPasswordScreen = ({navigation} : any) => {
         firebase.auth()
             .sendPasswordResetEmail(email)
             .then(() => {
-                Alert.alert('Sent!', 'Password reset email sent successfully');
+                Alert.alert('Sent', 'Password reset email sent successfully.');
             })
             .catch((error) => {
-                Alert.alert('Error!', error.message);
+                if (error.code === 'auth/missing-email') {
+                    Alert.alert('Error', 'Please enter an email address.');
+                } else if (error.code === 'auth/invalid-email') {
+                    Alert.alert('Error', 'Please enter a valid email.');
+                } else {
+                    Alert.alert('Error', error.message);
+                }
             });
     } 
     
