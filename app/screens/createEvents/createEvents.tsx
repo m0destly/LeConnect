@@ -55,10 +55,12 @@ const CreateEventsScreen = () => {
 
   const sendToBackEnd = async () => {
     if (title.trim().length === 0 ||
-      value.length === 0 || 
+      value.length === 0 ||
       location.trim().length === 0 ||
       description.trim().length === 0) {
-      Alert.alert("Error", "Do not leave any fields empty");
+      Alert.alert("Error", "Do not leave any fields empty.");
+    } else if (selectedDate.valueOf() < new Date().valueOf()) {
+      Alert.alert("Error", "Event must be set to current time or later.")
     } else {
       createEvents();
     }
