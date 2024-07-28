@@ -78,7 +78,7 @@ const LoginScreen = ({ navigation }) => {
         <TextInput
           ref={usernameRef}
           style={styles.inputText}
-          placeholder="Username"
+          placeholder="Email"
           placeholderTextColor="#ffffff"
           onChangeText={setUsername}
           autoCapitalize='none'
