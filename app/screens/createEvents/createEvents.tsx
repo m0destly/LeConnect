@@ -100,7 +100,8 @@ const CreateEventsScreen = () => {
             onChangeText={setTitle}
             value={title}
             maxLength={50}
-            placeholder="Enter title here..."
+            placeholder="Enter title here"
+            placeholderTextColor='#C7C7CD'
           />
         </View>
 
@@ -117,7 +118,7 @@ const CreateEventsScreen = () => {
             setOpen={setOpen}
             setValue={setValue}
             setItems={setCategories}
-            placeholder={'Select categories...'}
+            placeholder={'Select categories'}
             mode="SIMPLE"
           />
         </View>
@@ -152,7 +153,8 @@ const CreateEventsScreen = () => {
             style={[styles.input, styles.inputLocation]}
             onChangeText={setLocation}
             value={location}
-            placeholder='Paste location from Maps here...'
+            placeholder='Paste location from Maps here'
+            placeholderTextColor='#C7C7CD'
             maxLength={150}
             multiline={true}
             textAlignVertical='top'
@@ -180,7 +182,8 @@ const CreateEventsScreen = () => {
             style={[styles.input, styles.inputDescription]}
             onChangeText={setDescription}
             value={description}
-            placeholder="Enter description here..."
+            placeholder="Enter description here"
+            placeholderTextColor='#C7C7CD'
             maxLength={500}
             multiline={true}
             textAlignVertical='top'

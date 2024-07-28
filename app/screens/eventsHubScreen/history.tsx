@@ -4,7 +4,7 @@ import UserContext from '@/app/userContext';
 import firebase from 'firebase/compat';
 import { EventData, Event } from '@/app/types.d';
 
-const EventsHubScreen = ({ navigation }) => {
+const HistoryScreen = ({ navigation }) => {
   
   const { user } = useContext(UserContext);
   const [eachEvent, setEachEvent] = useState([]);
@@ -115,4 +115,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EventsHubScreen;
+export default HistoryScreen;

@@ -111,6 +111,7 @@ const NewProfileScreen = ({ navigation }) => {
           value={name}
           onChangeText={setName}
           placeholder="Enter your name"
+          placeholderTextColor='#C7C7CD'
           maxLength={50}
         />
 
@@ -121,6 +122,7 @@ const NewProfileScreen = ({ navigation }) => {
           onChangeText={(input) => setAge(input.replace(/[^1234567890]/g, ''))}
           keyboardType="number-pad"
           placeholder="Enter your age"
+          placeholderTextColor='#C7C7CD'
           maxLength={3}
         />
 
@@ -144,6 +146,7 @@ const NewProfileScreen = ({ navigation }) => {
           value={contact}
           onChangeText={setContact}
           placeholder="Enter your contact information"
+          placeholderTextColor='#C7C7CD'
           multiline={true}
           keyboardType='default'
           textAlignVertical='top'
@@ -156,6 +159,7 @@ const NewProfileScreen = ({ navigation }) => {
           value={bio}
           onChangeText={setBio}
           placeholder="Tell others about yourself"
+          placeholderTextColor='#C7C7CD'
           multiline={true}
           keyboardType='default'
           textAlignVertical='top'

@@ -138,6 +138,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 style={styles.passwordInput}
                 value={newPassword}
                 placeholder="New Password"
+                placeholderTextColor='#C7C7CD'
                 onChangeText={setNewPassword}
                 secureTextEntry={true}
               />
@@ -145,6 +146,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 style={styles.passwordInput}
                 value={confirmPW}
                 placeholder="Confirm Password"
+                placeholderTextColor='#C7C7CD'
                 onChangeText={setConfirmPW}
                 secureTextEntry={true}
 

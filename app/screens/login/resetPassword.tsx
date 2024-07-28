@@ -29,6 +29,7 @@ const ResetPasswordScreen = ({navigation} : any) => {
             <TextInput
                 style={styles.input}
                 placeholder="Enter email"
+                placeholderTextColor='#C7C7CD'
                 onChangeText={setEmail}
                 value={email}
                 keyboardType="email-address"
