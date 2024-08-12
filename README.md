@@ -24,6 +24,8 @@ LeConnect is a social media application that aims to help connect students from 
    ```bash
    npx expo start
    ```
+   
+5. Press `a` to launch the Android Emulator(make sure Android Studio is launched, then open a device from the Virtual Device Manager before starting) or `i` to launch the iOS Emulator
 
 ## Test through Expo Go App on Mobile Device (Recommended)
 
